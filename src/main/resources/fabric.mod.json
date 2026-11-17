@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "logvex",
+  "version": "${version}",
+  "name": "Logvex Client",
+  "description": "An old-school 1.8-style anarchy client for Minecraft 1.21.11.",
+  "authors": ["Logvex"],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/logvex/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "dev.logvex.client.LogvexClient"
+    ]
+  },
+  "mixins": [
+    "logvex.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "minecraft": "~${minecraft_version}",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}

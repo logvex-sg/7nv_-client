@@ -1,0 +1,337 @@
+{
+  "name": "crystal",
+  "modules": {
+    "Armor Durability": {
+      "enabled": true,
+      "visible": true
+    },
+    "Auto Armor": {
+      "enabled": true,
+      "visible": true
+    },
+    "Auto Totem": {
+      "enabled": true,
+      "visible": true
+    },
+    "Auto Weapon": {
+      "enabled": true,
+      "visible": true
+    },
+    "Combat Notifications": {
+      "enabled": true,
+      "visible": true
+    },
+    "Crystal Assist": {
+      "enabled": true,
+      "visible": true
+    },
+    "Crystal Aura": {
+      "enabled": true,
+      "visible": true
+    },
+    "Crystal Counter": {
+      "enabled": true,
+      "visible": true
+    },
+    "Damage Calculator": {
+      "enabled": true,
+      "visible": true
+    },
+    "Hole Fill": {
+      "enabled": true,
+      "visible": true
+    },
+    "Surround": {
+      "enabled": true,
+      "visible": true
+    },
+    "Target HUD": {
+      "enabled": true,
+      "visible": true
+    },
+    "Totem Counter": {
+      "enabled": true,
+      "visible": true
+    },
+    "Weapon Information": {
+      "enabled": true,
+      "visible": true
+    },
+    "Chunk Loading Diagnostics": {
+      "enabled": false,
+      "visible": true
+    },
+    "Client State Inspector": {
+      "enabled": false,
+      "visible": true
+    },
+    "Connection Diagnostics": {
+      "enabled": false,
+      "visible": true
+    },
+    "Desync Detector": {
+      "enabled": false,
+      "visible": true
+    },
+    "Entity Metadata Inspector": {
+      "enabled": false,
+      "visible": true
+    },
+    "Packet Inspector": {
+      "enabled": false,
+      "visible": true
+    },
+    "Packet Statistics": {
+      "enabled": false,
+      "visible": true
+    },
+    "Protocol Information": {
+      "enabled": false,
+      "visible": true
+    },
+    "Server Capability Detection": {
+      "enabled": false,
+      "visible": true
+    },
+    "Auto EZ": {
+      "enabled": true,
+      "visible": true
+    },
+    "Auto GG": {
+      "enabled": false,
+      "visible": true
+    },
+    "Auto Reconnect": {
+      "enabled": true,
+      "visible": true
+    },
+    "Chat Macros": {
+      "enabled": false,
+      "visible": true
+    },
+    "Chat Timestamps": {
+      "enabled": true,
+      "visible": true
+    },
+    "Enemy List": {
+      "enabled": false,
+      "visible": true
+    },
+    "Friend Manager": {
+      "enabled": false,
+      "visible": true
+    },
+    "Module Search": {
+      "enabled": false,
+      "visible": true
+    },
+    "Notifications": {
+      "enabled": true,
+      "visible": true
+    },
+    "Screenshot Manager": {
+      "enabled": false,
+      "visible": true
+    },
+    "Session Statistics": {
+      "enabled": false,
+      "visible": true
+    },
+    "Auto Sprint": {
+      "enabled": true,
+      "visible": true
+    },
+    "Elytra Utilities": {
+      "enabled": false,
+      "visible": true
+    },
+    "Fall Distance": {
+      "enabled": false,
+      "visible": true
+    },
+    "Jump Assist": {
+      "enabled": false,
+      "visible": true
+    },
+    "Movement HUD": {
+      "enabled": false,
+      "visible": true
+    },
+    "No Slow": {
+      "enabled": true,
+      "visible": true
+    },
+    "Safe Walk": {
+      "enabled": true,
+      "visible": true
+    },
+    "Speed": {
+      "enabled": false,
+      "visible": true
+    },
+    "Spider": {
+      "enabled": false,
+      "visible": true
+    },
+    "Sprint": {
+      "enabled": true,
+      "visible": true
+    },
+    "Step": {
+      "enabled": false,
+      "visible": true
+    },
+    "Velocity Display": {
+      "enabled": true,
+      "visible": true
+    },
+    "Armor HUD": {
+      "enabled": false,
+      "visible": true
+    },
+    "Auto Eat": {
+      "enabled": false,
+      "visible": true
+    },
+    "Durability HUD": {
+      "enabled": true,
+      "visible": true
+    },
+    "Health HUD": {
+      "enabled": true,
+      "visible": true
+    },
+    "Inventory HUD": {
+      "enabled": false,
+      "visible": true
+    },
+    "Inventory Manager": {
+      "enabled": false,
+      "visible": true
+    },
+    "Item Information": {
+      "enabled": false,
+      "visible": true
+    },
+    "Potion HUD": {
+      "enabled": false,
+      "visible": true
+    },
+    "Status Effects": {
+      "enabled": false,
+      "visible": true
+    },
+    "Totem HUD": {
+      "enabled": true,
+      "visible": true
+    },
+    "Block Highlight": {
+      "enabled": false,
+      "visible": true
+    },
+    "Chunk Borders": {
+      "enabled": false,
+      "visible": true
+    },
+    "Custom Crosshair": {
+      "enabled": false,
+      "visible": true
+    },
+    "Entity Boxes": {
+      "enabled": false,
+      "visible": true
+    },
+    "Entity ESP": {
+      "enabled": false,
+      "visible": true
+    },
+    "Fullbright": {
+      "enabled": false,
+      "visible": true
+    },
+    "Health Bars": {
+      "enabled": false,
+      "visible": true
+    },
+    "Hole ESP": {
+      "enabled": false,
+      "visible": true
+    },
+    "Item ESP": {
+      "enabled": false,
+      "visible": true
+    },
+    "Logout Spots": {
+      "enabled": false,
+      "visible": true
+    },
+    "Mob ESP": {
+      "enabled": false,
+      "visible": true
+    },
+    "Nametags": {
+      "enabled": false,
+      "visible": true
+    },
+    "Player ESP": {
+      "enabled": false,
+      "visible": true
+    },
+    "Projectile Trails": {
+      "enabled": false,
+      "visible": true
+    },
+    "Storage ESP": {
+      "enabled": false,
+      "visible": true
+    },
+    "Tracers": {
+      "enabled": false,
+      "visible": true
+    },
+    "Biome Display": {
+      "enabled": false,
+      "visible": true
+    },
+    "Chunk Information": {
+      "enabled": false,
+      "visible": true
+    },
+    "Container Information": {
+      "enabled": false,
+      "visible": true
+    },
+    "Coordinates": {
+      "enabled": false,
+      "visible": true
+    },
+    "Death Coordinates": {
+      "enabled": true,
+      "visible": true
+    },
+    "Entity Counter": {
+      "enabled": false,
+      "visible": true
+    },
+    "Map Markers": {
+      "enabled": false,
+      "visible": true
+    },
+    "Portal Information": {
+      "enabled": false,
+      "visible": true
+    },
+    "Stash Notes": {
+      "enabled": false,
+      "visible": true
+    },
+    "Waypoints": {
+      "enabled": false,
+      "visible": true
+    },
+    "World Time": {
+      "enabled": false,
+      "visible": true
+    }
+  }
+}
