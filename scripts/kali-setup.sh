@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Logvex Client — Kali Linux / Debian build setup.
+# 7nv_ Client — Kali Linux / Debian build setup.
 #
 # Installs the JDKs the build needs, verifies the Gradle wrapper, builds the mod
 # and prints the JAR path. Pass --prism to also register a Prism Launcher
@@ -77,7 +77,7 @@ chmod +x ./gradlew
 log "Building the mod (this can take a few minutes on the first run)"
 ./gradlew clean build || die "Build failed. Fix the errors above and re-run."
 
-JAR="$(ls -1 build/libs/logvex-*.jar 2>/dev/null | grep -v sources | head -1)"
+JAR="$(ls -1 build/libs/sevennv-*.jar 2>/dev/null | grep -v sources | head -1)"
 [ -n "$JAR" ] || die "The build finished but no JAR was produced."
 log "Built: $REPO_DIR/$JAR"
 
@@ -93,7 +93,7 @@ cat <<EOF
 Done.
 
   Mod JAR   : $REPO_DIR/$JAR
-  Config    : ~/.minecraft/config/logvex/  (created on first launch)
+  Config    : ~/.minecraft/config/sevennv/  (created on first launch)
   ClickGUI  : Right Shift
   HUD editor: Right Control
 

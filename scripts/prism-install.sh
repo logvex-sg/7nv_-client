@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 #
-# Logvex Client — Prism Launcher installer.
+# 7nv_ Client — Prism Launcher installer.
 #
-# Creates (or updates) a "Logvex 1.21.11" Prism instance with Fabric Loader,
-# Fabric API and the built Logvex JAR in its mods/ folder.
+# Creates (or updates) a "7nv_ 1.21.11" Prism instance with Fabric Loader,
+# Fabric API and the built 7nv_ JAR in its mods/ folder.
 #
 # Usage:
 #   ./scripts/prism-install.sh [PRISM_DATA_DIR] [--loader VERSION] [--no-download]
@@ -18,7 +18,7 @@ set -u
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MC_VERSION="1.21.11"
 LOADER_VERSION="0.20.1"
-INSTANCE_NAME="Logvex ${MC_VERSION}"
+INSTANCE_NAME="7nv_ ${MC_VERSION}"
 FABRIC_API_MAVEN="https://maven.fabricmc.net/net/fabricmc/fabric-loader"
 NO_DOWNLOAD=0
 PRISM_DIR=""
@@ -64,14 +64,14 @@ log "Prism data directory: $PRISM_DIR"
 
 # ------------------------------------------------------------------ mod jar
 
-JAR="$(ls -1 "$REPO_DIR"/build/libs/logvex-*.jar 2>/dev/null | grep -v sources | head -1)"
-[ -n "$JAR" ] || die "No Logvex JAR found. Run ./gradlew build first."
+JAR="$(ls -1 "$REPO_DIR"/build/libs/sevennv-*.jar 2>/dev/null | grep -v sources | head -1)"
+[ -n "$JAR" ] || die "No 7nv_ JAR found. Run ./gradlew build first."
 log "Mod JAR: $JAR"
 
 # ------------------------------------------------------------------ instance
 
 INSTANCE_DIR="$PRISM_DIR/instances/$INSTANCE_NAME"
-mkdir -p "$INSTANCE_DIR/.minecraft/mods" "$INSTANCE_DIR/.minecraft/config/logvex"
+mkdir -p "$INSTANCE_DIR/.minecraft/mods" "$INSTANCE_DIR/.minecraft/config/sevennv"
 log "Instance directory: $INSTANCE_DIR"
 
 cat > "$INSTANCE_DIR/instance.cfg" <<EOF
@@ -135,13 +135,13 @@ fi
 # ------------------------------------------------------------------ profiles
 
 # Seed the bundled example profiles so they show up in .config profiles.
-mkdir -p "$INSTANCE_DIR/.minecraft/config/logvex/profiles"
+mkdir -p "$INSTANCE_DIR/.minecraft/config/sevennv/profiles"
 for profile in default anarchy crystal; do
     src="$REPO_DIR/config-examples/$profile.json"
     [ -f "$src" ] || continue
-    cp -f "$src" "$INSTANCE_DIR/.minecraft/config/logvex/profiles/$profile.json"
+    cp -f "$src" "$INSTANCE_DIR/.minecraft/config/sevennv/profiles/$profile.json"
 done
-log "Seeded example profiles into config/logvex/profiles/"
+log "Seeded example profiles into config/sevennv/profiles/"
 
 cat <<EOF
 

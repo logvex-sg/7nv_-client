@@ -1,4 +1,4 @@
-# Logvex Client
+# 7nv_ Client
 
 An independent, client-side Fabric mod for **Minecraft Java 1.21.11** that recreates
 the classic 1.8-era "hacked client" interface: dark grey panels, small readable
@@ -6,8 +6,8 @@ text, green ON / grey OFF indicators, draggable category windows, an expandable
 module list, a search bar and a flat array list. No dashboards, no gradients,
 no rounded corners.
 
-* Mod ID: `logvex`
-* Package: `dev.logvex.client`
+* Mod ID: `sevennv`
+* Package: `dev.sevennv.client`
 * Environment: client only (nothing is sent to the server except your own chat)
 * License: MIT
 
@@ -27,7 +27,7 @@ JDK lives elsewhere.
 ./gradlew clean build
 ```
 
-The mod JAR is written to `build/libs/logvex-1.0.0.jar`. A sources JAR is
+The mod JAR is written to `build/libs/sevennv-1.1.0.jar`. A sources JAR is
 produced alongside it.
 
 ### Offline builds
@@ -50,7 +50,7 @@ Gradle cache. After that you can build without a network:
 ./scripts/prism-install.sh /path/to/prism
 ```
 
-The script creates a `Logvex 1.21.11` instance, downloads Fabric Loader and
+The script creates a `7nv_ 1.21.11` instance, downloads Fabric Loader and
 Fabric API if they are missing, drops the built JAR into `mods/` and registers
 the instance. Run `./gradlew build` first.
 
@@ -58,7 +58,7 @@ the instance. Run `./gradlew build` first.
 
 1. Install Fabric Loader for 1.21.11.
 2. Put [Fabric API](https://modrinth.com/mod/fabric-api) for 1.21.11 in `.minecraft/mods/`.
-3. Put `build/libs/logvex-1.0.0.jar` in `.minecraft/mods/`.
+3. Put `build/libs/sevennv-1.1.0.jar` in `.minecraft/mods/`.
 4. Launch the Fabric 1.21.11 profile.
 
 ### Kali Linux setup
@@ -117,8 +117,12 @@ Commands start with a dot so they never collide with the server's namespace.
 | `.bind <module>` | Bind a module to the next key you press |
 | `.friend <add\|remove\|list> [name]` | Manage the friend list |
 | `.enemy <add\|remove\|list> [name]` | Manage the enemy list |
-| `.config <save\|reload\|profile <name>>` | Config control |
+| `.config <save\|reload\|profile\|list\|create\|delete\|export\|import\|backup\|restore>` | Profiles, import/export and backups |
 | `.hud <element\|editor>` | Toggle a HUD element, or open the layout editor |
+| `.waypoint <add\|remove\|list\|clear> [name] [x y z]` | Manage stored waypoints |
+| `.marker <name\|remove <name>\|clear>` | Place or clear temporary map markers |
+| `.screenshot` | Capture a screenshot with the configured name |
+| `.effects` | List your active status effects |
 | `.help` | List the commands |
 
 ---
@@ -177,10 +181,10 @@ traffic and never attempt to bypass server protections.
 
 ## Configuration
 
-Everything lives under `.minecraft/config/logvex/`:
+Everything lives under `.minecraft/config/sevennv/`:
 
 ```
-config/logvex/
+config/sevennv/
 ├── config.json              global settings: theme, GUI layout, HUD layout
 ├── profiles/
 │   ├── default.json         module states, settings and keybinds
@@ -198,7 +202,7 @@ config/logvex/
 * **Import / export** copies a profile in or out of the config root.
 
 Example profiles ship in `config-examples/` — copy them into
-`config/logvex/profiles/` to use them:
+`config/sevennv/profiles/` to use them:
 
 * `default.json` — a light, safe setup.
 * `anarchy.json` — full render and combat set for anarchy servers.
@@ -209,8 +213,8 @@ Example profiles ship in `config-examples/` — copy them into
 ## Architecture
 
 ```
-dev.logvex.client
-├── LogvexClient              mod entrypoint, wires the managers
+dev.sevennv.client
+├── SevennvClient              mod entrypoint, wires the managers
 ├── ClientEvents              Fabric event callbacks, tick/packet/chat plumbing
 ├── combat/  movement/  render/  world/  player/  misc/  diagnostics/
 ├── hud/                      HUD elements plus HudManager

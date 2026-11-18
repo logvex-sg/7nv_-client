@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "id": "logvex",
+  "id": "sevennv",
   "version": "${version}",
-  "name": "Logvex Client",
+  "name": "7nv_ Client",
   "description": "An old-school 1.8-style anarchy client for Minecraft 1.21.11.",
-  "authors": ["Logvex"],
+  "authors": ["7nv_"],
   "contact": {},
   "license": "MIT",
-  "icon": "assets/logvex/icon.png",
+  "icon": "assets/sevennv/icon.png",
   "environment": "client",
   "entrypoints": {
     "client": [
-      "dev.logvex.client.LogvexClient"
+      "dev.sevennv.client.SevennvClient"
     ]
   },
   "mixins": [
-    "logvex.mixins.json"
+    "sevennv.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=${loader_version}",

@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "dev.sevennv.client.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "ConnectionMixin",
+    "ServerboundInteractPacketAccessor",
+    "KeyboardHandlerMixin",
+    "MouseHandlerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
