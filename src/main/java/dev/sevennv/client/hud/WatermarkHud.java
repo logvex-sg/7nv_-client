@@ -7,7 +7,7 @@ import net.minecraft.client.gui.GuiGraphics;
 /** The client name watermark, bottom-left by default. */
 public final class WatermarkHud extends HudElement {
     public WatermarkHud() {
-        super("watermark", "Watermark", 2, 194);
+        super("watermark", "Watermark", 110, 112);
     }
 
     private String text() {

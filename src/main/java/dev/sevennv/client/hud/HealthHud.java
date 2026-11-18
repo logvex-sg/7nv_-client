@@ -7,7 +7,7 @@ import net.minecraft.world.entity.player.Player;
 /** Health, absorption and food levels. */
 public final class HealthHud extends HudElement {
     public HealthHud() {
-        super("health", "Health", 2, 104);
+        super("health", "Health", 110, 57);
     }
 
     @Override

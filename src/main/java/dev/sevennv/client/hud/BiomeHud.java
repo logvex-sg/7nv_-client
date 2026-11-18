@@ -6,7 +6,7 @@ import net.minecraft.client.gui.GuiGraphics;
 /** Biome and dimension readout. */
 public final class BiomeHud extends HudElement {
     public BiomeHud() {
-        super("biome", "Biome", 2, 58);
+        super("biome", "Biome", 110, 35);
     }
 
     @Override

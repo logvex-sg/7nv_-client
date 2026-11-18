@@ -83,6 +83,46 @@ import dev.sevennv.client.world.PortalInformation;
 import dev.sevennv.client.world.StashNotes;
 import dev.sevennv.client.world.Waypoints;
 import dev.sevennv.client.world.WorldTime;
+import dev.sevennv.client.combat.AutoBlock;
+import dev.sevennv.client.combat.AutoClicker;
+import dev.sevennv.client.combat.AutoWeaponSwitch;
+import dev.sevennv.client.combat.Criticals;
+import dev.sevennv.client.combat.GappleOffhand;
+import dev.sevennv.client.combat.Reach;
+import dev.sevennv.client.movement.AntiVoid;
+import dev.sevennv.client.movement.AutoJumpReset;
+import dev.sevennv.client.movement.AutoWalk;
+import dev.sevennv.client.movement.FastLadder;
+import dev.sevennv.client.movement.IceSpeed;
+import dev.sevennv.client.movement.LongJump;
+import dev.sevennv.client.movement.NoFall;
+import dev.sevennv.client.movement.NoJumpDelay;
+import dev.sevennv.client.movement.Velocity;
+import dev.sevennv.client.world.AutoMine;
+import dev.sevennv.client.world.AutoTool;
+import dev.sevennv.client.world.FastBreak;
+import dev.sevennv.client.world.FastPlace;
+import dev.sevennv.client.player.AntiHunger;
+import dev.sevennv.client.player.AutoArmorSwitch;
+import dev.sevennv.client.player.AutoFish;
+import dev.sevennv.client.player.AutoLog;
+import dev.sevennv.client.player.AutoPot;
+import dev.sevennv.client.player.AutoRespawn;
+import dev.sevennv.client.player.ChestStealer;
+import dev.sevennv.client.player.Refill;
+import dev.sevennv.client.render.AntiBlind;
+import dev.sevennv.client.render.AntiFog;
+import dev.sevennv.client.render.AspectRatio;
+import dev.sevennv.client.render.CameraClip;
+import dev.sevennv.client.render.DamageTint;
+import dev.sevennv.client.render.Freecam;
+import dev.sevennv.client.render.NoHurtCam;
+import dev.sevennv.client.render.NoRender;
+import dev.sevennv.client.render.ViewModel;
+import dev.sevennv.client.render.Zoom;
+import dev.sevennv.client.misc.Announcer;
+import dev.sevennv.client.misc.AutoTip;
+import dev.sevennv.client.diagnostics.PingHistory;
 
 /**
  * Registers every module with the {@link ModuleManager}. Kept in one place so
@@ -109,6 +149,12 @@ public final class ModuleRegistry {
                 new CombatNotifications(),
                 new ArmorDurability(),
                 new WeaponInformation(),
+                new AutoClicker(),
+                new Reach(),
+                new Criticals(),
+                new AutoBlock(),
+                new AutoWeaponSwitch(),
+                new GappleOffhand(),
 
                 // Movement
                 new Sprint(),
@@ -123,6 +169,15 @@ public final class ModuleRegistry {
                 new MovementHud(),
                 new FallDistance(),
                 new VelocityDisplay(),
+                new Velocity(),
+                new NoFall(),
+                new AntiVoid(),
+                new AutoWalk(),
+                new FastLadder(),
+                new LongJump(),
+                new IceSpeed(),
+                new AutoJumpReset(),
+                new NoJumpDelay(),
 
                 // Render
                 new PlayerEsp(),
@@ -141,6 +196,16 @@ public final class ModuleRegistry {
                 new CustomCrosshair(),
                 new BlockHighlight(),
                 new LogoutSpots(),
+                new Zoom(),
+                new Freecam(),
+                new CameraClip(),
+                new ViewModel(),
+                new AntiFog(),
+                new NoRender(),
+                new NoHurtCam(),
+                new AspectRatio(),
+                new AntiBlind(),
+                new DamageTint(),
 
                 // World
                 new Waypoints(),
@@ -154,6 +219,10 @@ public final class ModuleRegistry {
                 new WorldTime(),
                 new ContainerInformation(),
                 new EntityCounter(),
+                new AutoTool(),
+                new FastPlace(),
+                new FastBreak(),
+                new AutoMine(),
 
                 // Player
                 new InventoryManager(),
@@ -166,6 +235,14 @@ public final class ModuleRegistry {
                 new DurabilityHud(),
                 new ItemInformation(),
                 new StatusEffects(),
+                new AutoRespawn(),
+                new AutoLog(),
+                new AntiHunger(),
+                new AutoPot(),
+                new Refill(),
+                new AutoArmorSwitch(),
+                new ChestStealer(),
+                new AutoFish(),
 
                 // Miscellaneous
                 new AutoEz(),
@@ -179,6 +256,8 @@ public final class ModuleRegistry {
                 new EnemyList(),
                 new Notifications(),
                 new ModuleSearch(),
+                new AutoTip(),
+                new Announcer(),
 
                 // Diagnostics
                 new PacketInspector(),
@@ -189,7 +268,8 @@ public final class ModuleRegistry {
                 new DesyncDetector(),
                 new ChunkLoadingDiagnostics(),
                 new EntityMetadataInspector(),
-                new ClientStateInspector()
+                new ClientStateInspector(),
+                new PingHistory()
         );
     }
 }

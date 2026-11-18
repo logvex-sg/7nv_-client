@@ -6,7 +6,7 @@ import net.minecraft.client.gui.GuiGraphics;
 /** Top-left readout of FPS, ping and CPS. */
 public final class PerformanceHud extends HudElement {
     public PerformanceHud() {
-        super("performance", "Performance", 2, 2);
+        super("performance", "Performance", 110, 2);
     }
 
     @Override

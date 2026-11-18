@@ -7,7 +7,7 @@ import net.minecraft.world.food.FoodData;
 /** Food and saturation readout for the local player. */
 public final class FoodHud extends HudElement {
     public FoodHud() {
-        super("food", "Food", 2, 70);
+        super("food", "Food", 110, 46);
     }
 
     @Override

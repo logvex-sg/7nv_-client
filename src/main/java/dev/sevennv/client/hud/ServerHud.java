@@ -6,7 +6,7 @@ import net.minecraft.client.gui.GuiGraphics;
 /** Server name, version and ping summary. */
 public final class ServerHud extends HudElement {
     public ServerHud() {
-        super("server", "Server Info", 2, 126);
+        super("server", "Server Info", 110, 68);
     }
 
     @Override

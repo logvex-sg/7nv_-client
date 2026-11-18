@@ -8,7 +8,7 @@ import net.minecraft.world.entity.player.Player;
 /** Coordinate readout with optional chunk offset. */
 public final class CoordinatesHud extends HudElement {
     public CoordinatesHud() {
-        super("coordinates", "Coordinates", 2, 34);
+        super("coordinates", "Coordinates", 110, 13);
     }
 
     @Override

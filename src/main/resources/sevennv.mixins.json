@@ -6,7 +6,18 @@
     "ConnectionMixin",
     "ServerboundInteractPacketAccessor",
     "KeyboardHandlerMixin",
-    "MouseHandlerMixin"
+    "MouseHandlerMixin",
+    "MinecraftAccessor",
+    "MultiPlayerGameModeAccessor",
+    "ClientPacketListenerMixin",
+    "CameraMixin",
+    "GameRendererMixin",
+    "FogRendererMixin",
+    "GuiMixin",
+    "ItemInHandRendererMixin",
+    "FishingHookAccessor",
+    "LivingEntityAccessor",
+    "ParticleEngineMixin"
   ],
   "injectors": {
     "defaultRequire": 1

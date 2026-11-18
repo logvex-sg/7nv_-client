@@ -7,7 +7,7 @@ import net.minecraft.world.entity.player.Player;
 /** Compass direction and axis readout. */
 public final class DirectionHud extends HudElement {
     public DirectionHud() {
-        super("direction", "Direction", 2, 46);
+        super("direction", "Direction", 110, 24);
     }
 
     @Override

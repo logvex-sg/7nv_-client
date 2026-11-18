@@ -147,6 +147,11 @@ public final class InventoryUtils {
         click(menuSlot, OFFHAND_BUTTON, ClickType.SWAP);
     }
 
+    /** Swaps the clicked slot with a hotbar slot (button 0-8). */
+    public static void swapWithHotbar(int menuSlot, int hotbarButton) {
+        click(menuSlot, hotbarButton, ClickType.SWAP);
+    }
+
     public static void pickup(int menuSlot, int button) {
         click(menuSlot, button, ClickType.PICKUP);
     }

@@ -8,7 +8,7 @@ public final class SessionHud extends HudElement {
     private final long started = System.currentTimeMillis();
 
     public SessionHud() {
-        super("session", "Session Timer", 2, 170);
+        super("session", "Session Timer", 110, 90);
     }
 
     @Override

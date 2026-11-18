@@ -13,7 +13,7 @@ public final class ArmorHud extends HudElement {
     };
 
     public ArmorHud() {
-        super("armor", "Armor", 2, 148);
+        super("armor", "Armor", 110, 79);
     }
 
     @Override

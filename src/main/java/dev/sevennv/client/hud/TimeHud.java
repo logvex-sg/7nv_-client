@@ -6,7 +6,7 @@ import net.minecraft.client.gui.GuiGraphics;
 /** In-game world clock and day counter. */
 public final class TimeHud extends HudElement {
     public TimeHud() {
-        super("time", "World Time", 2, 182);
+        super("time", "World Time", 110, 101);
     }
 
     @Override
