@@ -83,6 +83,23 @@ public final class CommandManager {
             String summary = manager.summary();
             return summary.isEmpty() ? "No active effects" : "Effects: " + summary;
         }));
+        commands.add(new Command("ac", "ac", "Reports the detected anti-cheat and server software", args -> {
+            if (!dev.sevennv.client.utils.ServerFingerprint.hasSignals()) {
+                return "No server signals yet";
+            }
+            StringBuilder builder = new StringBuilder();
+            var antiCheat = dev.sevennv.client.utils.ServerFingerprint.bestAntiCheat();
+            builder.append("Anti-cheat: ").append(antiCheat == null ? "none matched" : antiCheat.name());
+            var server = dev.sevennv.client.utils.ServerFingerprint.best(dev.sevennv.client.utils.ServerFingerprint.Category.SERVER_SOFTWARE);
+            if (server != null) {
+                builder.append("  Server: ").append(server.name());
+            }
+            var proxy = dev.sevennv.client.utils.ServerFingerprint.best(dev.sevennv.client.utils.ServerFingerprint.Category.PROXY);
+            if (proxy != null) {
+                builder.append("  Proxy: ").append(proxy.name());
+            }
+            return builder.toString();
+        }));
         commands.add(new Command("help", "help", "Lists client commands", args -> {
             StringBuilder builder = new StringBuilder("Commands: ");
             for (Command command : commands) {

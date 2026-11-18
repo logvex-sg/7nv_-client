@@ -20,6 +20,7 @@ import dev.sevennv.client.utils.CombatTracker;
 import dev.sevennv.client.utils.CpsTracker;
 import dev.sevennv.client.utils.NotificationManager;
 import dev.sevennv.client.utils.PacketLog;
+import dev.sevennv.client.utils.ServerFingerprint;
 import dev.sevennv.client.world.DeathCoordinates;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
@@ -211,6 +212,7 @@ final class ClientEvents {
         CpsTracker.reset();
         PacketLog.reset();
         CombatTracker.reset();
+        ServerFingerprint.reset();
         deathCursor = System.currentTimeMillis();
         localDeathCursor = 0;
         LastServer.capture(mc);
@@ -232,6 +234,7 @@ final class ClientEvents {
         PacketLog.reset();
         CpsTracker.reset();
         CombatTracker.reset();
+        ServerFingerprint.reset();
 
         AutoReconnect reconnect = modules().get(AutoReconnect.class);
         if (reconnect != null && reconnect.isEnabled()) {

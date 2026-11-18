@@ -59,6 +59,7 @@ import dev.sevennv.client.hud.ServerIpHud;
 import dev.sevennv.client.hud.SessionTimerHud;
 import dev.sevennv.client.hud.TotemCountHud;
 import dev.sevennv.client.hud.TextRadarHud;
+import dev.sevennv.client.hud.AntiCheatHud;
 import dev.sevennv.client.hud.TpsHud;
 import dev.sevennv.client.module.KeybindManager;
 import dev.sevennv.client.module.ModuleManager;
@@ -198,5 +199,6 @@ public final class SevennvClient implements ClientModInitializer {
         hudManager.register(new SessionInfoHud());
         hudManager.register(new CullingHud());
         hudManager.register(new FpsGraphHud());
+        hudManager.register(new AntiCheatHud());
     }
 }

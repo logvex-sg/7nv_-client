@@ -20,6 +20,8 @@ import dev.sevennv.client.combat.TargetHud;
 import dev.sevennv.client.combat.TotemCounter;
 import dev.sevennv.client.combat.WeaponInformation;
 import dev.sevennv.client.diagnostics.ChunkLoadingDiagnostics;
+import dev.sevennv.client.diagnostics.AntiCheatDetector;
+import dev.sevennv.client.diagnostics.DetectionExposure;
 import dev.sevennv.client.diagnostics.PacketRate;
 import dev.sevennv.client.diagnostics.ClientStateInspector;
 import dev.sevennv.client.diagnostics.ConnectionDiagnostics;
@@ -391,6 +393,8 @@ public final class ModuleRegistry {
                 new ProtocolInformation(),
                 new ConnectionDiagnostics(),
                 new ServerCapabilityDetection(),
+                new AntiCheatDetector(),
+                new DetectionExposure(),
                 new DesyncDetector(),
                 new ChunkLoadingDiagnostics(),
                 new EntityMetadataInspector(),

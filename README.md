@@ -127,13 +127,14 @@ Commands start with a dot so they never collide with the server's namespace.
 | `.marker <name\|remove <name>\|clear>` | Place or clear temporary map markers |
 | `.screenshot` | Capture a screenshot with the configured name |
 | `.effects` | List your active status effects |
+| `.ac` | Report the detected anti-cheat and server software |
 | `.help` | List the commands |
 
 ---
 
 ## Modules
 
-187 modules across seven categories, plus 56 movable HUD elements.
+189 modules across seven categories, plus 57 movable HUD elements.
 
 **Combat (30)** — Crystal Aura, Crystal Assist, Auto Totem, Auto Armor, Auto
 Weapon, Surround, Hole Fill, Target HUD, Totem Counter, Crystal Counter, Damage
@@ -174,10 +175,11 @@ Screenshot Manager, Session Statistics, Friend List, Enemy List, Notifications,
 Module Search, Auto Tip, Announcer, Item Drop Guard, Chat Filter, Auto Shear,
 Auto Breed, Auto Mount, Auto Bucket, Chat Logger, Anti AFK, Middle Click.
 
-**Diagnostics (13)** — Packet Inspector, Packet Statistics, Protocol
-Information, Connection Diagnostics, Server Capability Detection, Desync
-Detector, Chunk Loading Diagnostics, Entity Metadata Inspector, Client State
-Inspector, Ping History, Entity Diagnostics, Frame Time, Packet Rate.
+**Diagnostics (15)** — Packet Inspector, Packet Statistics, Protocol
+Information, Connection Diagnostics, Server Capability Detection, Anti Cheat
+Detector, Detection Exposure, Desync Detector, Chunk Loading Diagnostics, Entity
+Metadata Inspector, Client State Inspector, Ping History, Entity Diagnostics,
+Frame Time, Packet Rate.
 
 A handful of modules hook the render pipeline through mixins (Zoom, Freecam,
 Camera Clip, View Model, Anti Fog, No Render, No Hurt Cam, Aspect Ratio, Anti
@@ -243,6 +245,27 @@ The diagnostics modules are **read-only observers**. They count and display
 packets, report the negotiated protocol version, show connection state and
 detect desync and chunk-loading stalls. They never send anything, never modify
 traffic and never attempt to bypass server protections.
+
+**Anti Cheat Detector** names the anti-cheat, proxy and server software the
+current connection is running. It is passive: it reads only data the server
+already sends — the brand string, the plugin channels it registers, the command
+tree it advertises, the tab-list header/footer and the scoreboard objective
+names — and matches them against a built-in knowledge base (Vulcan, Grim, Matrix,
+Spartan, Intave, Verus, AAC, NoCheatPlus, Polar, Reflex, Horizon, Karhu, Themis,
+Negativity, OpenEye and more; proxies such as Velocity and BungeeCord; server
+flavours such as Paper, Purpur, Folia, Fabric and Forge; and plugins such as
+ViaVersion, Geyser, LuckPerms, WorldEdit and PlaceholderAPI). Each match carries
+a confidence and, optionally, the signal it came from. It sends no probe packet
+and never touches the server's view of you. `.ac` prints the same summary in
+chat, and the movable **Anti-cheat** HUD element shows the top match.
+
+**Detection Exposure** is a self-audit of *your own* footprint: for every
+enabled module it estimates how far the module diverges from vanilla client
+behaviour (rotation, attack timing, physics-defying movement, packet rewriting,
+automated inventory or block actions) and ranks them High / Medium / Low. It is
+a heuristic, not a prediction of any specific server's rules, and it offers no
+bypass — it only shows you what you are running. It can also fold in the
+server-side signals (latency, jitter, TPS) from the connection diagnostics.
 
 ---
 
@@ -319,7 +342,10 @@ per-session state.
 * Auto EZ, Auto GG and chat macros send **your** messages from **your** account;
   use them within the rules of whatever server you play on.
 * Diagnostics are observational. There is deliberately no anti-cheat bypass, no
-  DoS, no crash and no credential code anywhere in this project.
+  DoS, no crash and no credential code anywhere in this project. The Anti Cheat
+  Detector and Detection Exposure modules only *read* what the server already
+  sends and *describe* it — they never probe the server, send an extra packet or
+  attempt to evade anything.
 * Performance modules (Entity Culling, Block Entity Culling, Particle Limiter)
   are always-on and cannot be switched off; the visual modules (Pixel Blocks,
   Fast Graphics, Dynamic Render Distance, Entity Distance) remain toggleable so
