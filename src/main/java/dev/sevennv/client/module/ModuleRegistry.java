@@ -162,6 +162,10 @@ import dev.sevennv.client.render.ItemFrameEsp;
 import dev.sevennv.client.render.SearchEsp;
 import dev.sevennv.client.render.NoBob;
 import dev.sevennv.client.render.TrueSight;
+import dev.sevennv.client.render.EntityCulling;
+import dev.sevennv.client.render.BlockEntityCulling;
+import dev.sevennv.client.render.PixelBlocks;
+import dev.sevennv.client.render.FastGraphics;
 import dev.sevennv.client.world.SpawnerFinder;
 import dev.sevennv.client.world.ChestTracker;
 import dev.sevennv.client.world.SignReader;
@@ -172,6 +176,7 @@ import dev.sevennv.client.misc.AutoShear;
 import dev.sevennv.client.misc.AutoBreed;
 import dev.sevennv.client.misc.AutoMount;
 import dev.sevennv.client.misc.AutoBucket;
+import dev.sevennv.client.misc.AntiAfk;
 import dev.sevennv.client.diagnostics.EntityDiagnostics;
 import dev.sevennv.client.diagnostics.FrameTime;
 
@@ -284,6 +289,10 @@ public final class ModuleRegistry {
                 new SearchEsp(),
                 new NoBob(),
                 new TrueSight(),
+                new EntityCulling(),
+                new BlockEntityCulling(),
+                new PixelBlocks(),
+                new FastGraphics(),
 
                 // World
                 new DistanceTracker(),
@@ -357,6 +366,7 @@ public final class ModuleRegistry {
                 new AutoBreed(),
                 new AutoMount(),
                 new AutoBucket(),
+                new AntiAfk(),
 
                 // Diagnostics
                 new PacketRate(),

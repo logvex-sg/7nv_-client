@@ -93,6 +93,18 @@ final class ClientEvents {
         HudElementRegistry.addLast(Identifier.fromNamespaceAndPath(SevennvClient.MOD_ID, "hud"),
                 ClientEvents::renderHud);
 
+        // Cache the camera position on the render thread before terrain is drawn,
+        // for the culling and pixel-block hooks, which may run on section-compile
+        // workers.
+        WorldRenderEvents.START_MAIN.register(context -> {
+            net.minecraft.client.Camera camera = context.gameRenderer().getMainCamera();
+            if (camera != null) {
+                net.minecraft.world.phys.Vec3 pos = camera.position();
+                dev.sevennv.client.render.PixelBlocks.updateCamera(pos.x, pos.y, pos.z);
+                dev.sevennv.client.render.EntityCulling.onFrameStart();
+            }
+        });
+
         // Gizmo-based world rendering: this callback runs inside the level
         // renderer's per-frame gizmo collection, so module emissions are picked
         // up by the same frame that is currently being drawn.

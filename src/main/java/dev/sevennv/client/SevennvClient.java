@@ -8,6 +8,7 @@ import dev.sevennv.client.hud.PingBarHud;
 import dev.sevennv.client.hud.BiomeCoordsHud;
 import dev.sevennv.client.hud.WorldClockHud;
 import dev.sevennv.client.hud.SpeedBarHud;
+import dev.sevennv.client.hud.CullingHud;
 import dev.sevennv.client.hud.SessionInfoHud;
 import dev.sevennv.client.hud.XpHud;
 import dev.sevennv.client.hud.AirHud;
@@ -194,5 +195,6 @@ public final class SevennvClient implements ClientModInitializer {
         hudManager.register(new WorldClockHud());
         hudManager.register(new SpeedBarHud());
         hudManager.register(new SessionInfoHud());
+        hudManager.register(new CullingHud());
     }
 }

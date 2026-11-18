@@ -27,7 +27,7 @@ JDK lives elsewhere.
 ./gradlew clean build
 ```
 
-The mod JAR is written to `build/libs/sevennv-1.6.0.jar`. A sources JAR is
+The mod JAR is written to `build/libs/sevennv-1.7.0.jar`. A sources JAR is
 produced alongside it.
 
 ### Offline builds
@@ -58,7 +58,7 @@ the instance. Run `./gradlew build` first.
 
 1. Install Fabric Loader for 1.21.11.
 2. Put [Fabric API](https://modrinth.com/mod/fabric-api) for 1.21.11 in `.minecraft/mods/`.
-3. Put `build/libs/sevennv-1.6.0.jar` in `.minecraft/mods/`.
+3. Put `build/libs/sevennv-1.7.0.jar` in `.minecraft/mods/`.
 4. Launch the Fabric 1.21.11 profile.
 
 ### Kali Linux setup
@@ -133,7 +133,7 @@ Commands start with a dot so they never collide with the server's namespace.
 
 ## Modules
 
-174 modules across seven categories, plus 54 movable HUD elements.
+179 modules across seven categories, plus 55 movable HUD elements.
 
 **Combat (29)** — Crystal Aura, Crystal Assist, Auto Totem, Auto Armor, Auto
 Weapon, Surround, Hole Fill, Target HUD, Totem Counter, Crystal Counter, Damage
@@ -148,12 +148,13 @@ Display, Velocity, No Fall, Anti Void, Auto Walk, Fast Ladder, Long Jump, Ice
 Speed, Auto Jump Reset, No Jump Delay, Auto Jump, Auto Sneak, Gui Move, No
 Levitation, Keep Sprint, Sprint Reset, No Web, Water Speed, Elytra Boost, Auto Swim.
 
-**Render (34)** — Player ESP, Mob ESP, Storage ESP, Item ESP, Entity ESP,
+**Render (38)** — Player ESP, Mob ESP, Storage ESP, Item ESP, Entity ESP,
 Tracers, Nametags, Fullbright, Hole ESP, Chunk Borders, Entity Boxes, Health
 Bars, Projectile Trails, Custom Crosshair, Block Highlight, Logout Spots, Zoom,
 Freecam, Camera Clip, View Model, Anti Fog, No Render, No Hurt Cam, Aspect
 Ratio, Anti Blind, Damage Tint, No Weather, Trajectories, Breadcrumbs, Item
-Frame ESP, Search ESP, No Bob, True Sight.
+Frame ESP, Search ESP, No Bob, True Sight, Entity Culling, Block Entity Culling,
+Pixel Blocks, Fast Graphics, Dynamic Render Distance.
 
 **World (23)** — Waypoints, Death Coordinates, Stash Notes, Portal Information,
 Chunk Information, Biome Display, Coordinates, Map Markers, World Time,
@@ -166,10 +167,10 @@ HUD, Totem HUD, Health HUD, Durability HUD, Item Information, Status Effects,
 Auto Respawn, Auto Log, Anti Hunger, Auto Pot, Refill, Auto Armor Switch, Chest
 Stealer, Auto Fish, Fast Use, Auto Tool Switch, Auto Drop, Auto Milk, Auto Exp, Health Warning.
 
-**Misc (20)** — Auto EZ, Auto GG, Auto Reconnect, Chat Timestamps, Chat Macros,
+**Misc (21)** — Auto EZ, Auto GG, Auto Reconnect, Chat Timestamps, Chat Macros,
 Screenshot Manager, Session Statistics, Friend List, Enemy List, Notifications,
 Module Search, Auto Tip, Announcer, Item Drop Guard, Chat Filter, Auto Shear,
-Auto Breed, Auto Mount, Auto Bucket, Chat Logger.
+Auto Breed, Auto Mount, Auto Bucket, Chat Logger, Anti AFK.
 
 **Diagnostics (13)** — Packet Inspector, Packet Statistics, Protocol
 Information, Connection Diagnostics, Server Capability Detection, Desync
@@ -179,10 +180,34 @@ Inspector, Ping History, Entity Diagnostics, Frame Time, Packet Rate.
 A handful of modules hook the render pipeline through mixins (Zoom, Freecam,
 Camera Clip, View Model, Anti Fog, No Render, No Hurt Cam, Aspect Ratio, Anti
 Blind, Damage Tint, Fast Place, Fast Break, Velocity, No Jump Delay, Auto Fish,
-No Weather).
+No Weather, Entity Culling, Block Entity Culling, Pixel Blocks).
 Each one only touches local client state — a projection matrix, a fog distance, a
-camera transform or a local cooldown — and never sends anything the server did
-not already expect.
+camera transform, a tesselation pose or a local cooldown — and never sends
+anything the server did not already expect.
+
+### Performance
+
+Five modules cut work the client does without changing what the server sees:
+
+* **Entity Culling** — adds a distance cap and a view-cone test on top of the
+  vanilla frustum check. Entities you are looking at, nametagged or glowing
+  entities and players inside the keep range are never culled.
+* **Block Entity Culling** — skips render-state extraction for distant or
+  fully-buried chests, signs and the like, with per-type keeps (chests, signs,
+  beacons, spawners) and a keep-looked-at guard.
+* **Fast Graphics** — one switch for cheap local options (clouds off, fewer
+  particles, ambient occlusion off, optional entity shadows and entity-distance
+  clamp). It restores your old values when switched off.
+* **Dynamic Render Distance** — nudges the render distance down when FPS is low
+  and back up when there is headroom, with hysteresis and a cooldown.
+* **Pixel Blocks** — shrinks each block model slightly so neighbouring blocks
+  read as a thin 1px outline, the classic 1.8 look. Collision, light and
+  hitboxes are untouched. Solid, cutout and translucent layers each toggle
+  separately, and the shrink can fade out with distance.
+
+The Culling HUD element shows entities culled this frame and the current render
+distance. Culling only ever skips something the client was about to draw; it
+never forces a draw vanilla skipped.
 
 ### Auto EZ and Auto GG
 

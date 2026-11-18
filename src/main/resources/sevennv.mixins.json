@@ -18,7 +18,10 @@
     "FishingHookAccessor",
     "LivingEntityAccessor",
     "ParticleEngineMixin",
-    "NoWeatherMixin"
+    "NoWeatherMixin",
+    "EntityRenderDispatcherMixin",
+    "BlockEntityRenderDispatcherMixin",
+    "BlockRenderDispatcherMixin"
   ],
   "injectors": {
     "defaultRequire": 1
