@@ -5,8 +5,8 @@ import dev.sevennv.client.config.DoubleSetting;
 import dev.sevennv.client.config.IntSetting;
 import dev.sevennv.client.module.Category;
 import dev.sevennv.client.module.Module;
+import dev.sevennv.client.utils.BreakUtils;
 import dev.sevennv.client.utils.InventoryUtils;
-import dev.sevennv.client.utils.PacketUtils;
 import dev.sevennv.client.utils.TargetUtils;
 import dev.sevennv.client.utils.Timer;
 import net.minecraft.core.BlockPos;
@@ -43,13 +43,27 @@ public final class AutoCity extends Module {
     private final Timer timer = new Timer();
 
     @Override
+    public void onDisable() {
+        BreakUtils.cancel();
+    }
+
+    @Override
     public void onWorldChange() {
         timer.reset();
+        BreakUtils.cancel();
     }
 
     @Override
     public void onTick() {
-        if (mc.player == null || mc.level == null || mc.gameMode == null || !timer.tick(delay.get())) {
+        if (mc.player == null || mc.level == null || mc.gameMode == null) {
+            return;
+        }
+        // Finish the break in progress before choosing the next support.
+        if (BreakUtils.breaking()) {
+            BreakUtils.tick();
+            return;
+        }
+        if (!timer.tick(delay.get())) {
             return;
         }
         LivingEntity target = bestTarget();
@@ -74,8 +88,7 @@ public final class AutoCity extends Module {
             if (switchTool.get()) {
                 InventoryUtils.switchTo(Items.NETHERITE_PICKAXE);
             }
-            mc.gameMode.destroyBlock(pos);
-            PacketUtils.swing();
+            BreakUtils.mine(pos);
             return;
         }
     }

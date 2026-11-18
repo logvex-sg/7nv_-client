@@ -27,7 +27,7 @@ JDK lives elsewhere.
 ./gradlew clean build
 ```
 
-The mod JAR is written to `build/libs/sevennv-1.8.0.jar`. A sources JAR is
+The mod JAR is written to `build/libs/sevennv-1.8.1.jar`. A sources JAR is
 produced alongside it.
 
 ### Offline builds
@@ -58,7 +58,7 @@ the instance. Run `./gradlew build` first.
 
 1. Install Fabric Loader for 1.21.11.
 2. Put [Fabric API](https://modrinth.com/mod/fabric-api) for 1.21.11 in `.minecraft/mods/`.
-3. Put `build/libs/sevennv-1.8.0.jar` in `.minecraft/mods/`.
+3. Put `build/libs/sevennv-1.8.1.jar` in `.minecraft/mods/`.
 4. Launch the Fabric 1.21.11 profile.
 
 ### Kali Linux setup
@@ -205,14 +205,14 @@ way that matters (a distant entity still exists — it is just not drawn).
   spawned far from the camera. Explosion, totem and portal particles are kept by
   default because they carry information. A generous budget means ordinary play
   is unchanged; only a burst is trimmed.
-* **Pixel Blocks** — shrinks each block model slightly so neighbouring blocks
-  read as a thin 1px outline, the classic 1.8 look. Collision, light and
-  hitboxes are untouched. Solid, cutout and translucent layers each toggle
-  separately, and the shrink can fade out with distance.
 
 These stay **toggleable** because they change what you see, so you decide when to
 trade looks for frames:
 
+* **Pixel Blocks** — shrinks each block model slightly so neighbouring blocks
+  read as a thin 1px outline, the classic 1.8 look. Collision, light and
+  hitboxes are untouched. Solid, cutout and translucent layers each toggle
+  separately, and the shrink can fade out with distance.
 * **Fast Graphics** — one switch for cheap local options (clouds off, fewer
   particles, ambient occlusion off, optional entity shadows). It restores your
   old values when switched off.
@@ -320,9 +320,9 @@ per-session state.
   use them within the rules of whatever server you play on.
 * Diagnostics are observational. There is deliberately no anti-cheat bypass, no
   DoS, no crash and no credential code anywhere in this project.
-* Performance modules (Entity Culling, Block Entity Culling, Particle Limiter,
-  Pixel Blocks) are always-on and cannot be switched off; the visual modules
-  (Fast Graphics, Dynamic Render Distance, Entity Distance) remain toggleable so
+* Performance modules (Entity Culling, Block Entity Culling, Particle Limiter)
+  are always-on and cannot be switched off; the visual modules (Pixel Blocks,
+  Fast Graphics, Dynamic Render Distance, Entity Distance) remain toggleable so
   you control the looks-for-frames trade.
 * Scaffold and Nuker place and break blocks through the ordinary interaction and
   destroy paths, so the server's own reach, break-time and anti-cheat rules still

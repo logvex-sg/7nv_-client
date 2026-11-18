@@ -62,6 +62,10 @@ public final class Scaffold extends Module {
         if (sneakOnly.get() && !mc.player.isShiftKeyDown()) {
             return;
         }
+        if (mc.player.isInWater() || mc.player.isInLava() || mc.player.onClimbable()
+                || mc.player.getAbilities().flying || mc.options.keyAttack.isDown()) {
+            return;
+        }
         if (!timer.tick(delay.get())) {
             return;
         }
@@ -71,21 +75,19 @@ public final class Scaffold extends Module {
         if (!isBlock(mc.player.getMainHandItem())) {
             return;
         }
-
+        // The block under the feet is air both while bridging over a gap and
+        // while rising in a jump; one placement covers both. The jump case is
+        // gated on the tower toggle so bridging still works with tower off.
         BlockPos below = mc.player.blockPosition().below();
-        if (mc.player.onGround() && mc.level.getBlockState(below).isAir()) {
-            if (placeAt(below)) {
-                return;
-            }
+        if (!mc.level.getBlockState(below).isAir()) {
+            return;
         }
-        // Towering: while rising, put a block under the next step up.
-        if (tower.get() && !mc.player.onGround() && mc.player.getDeltaMovement().y > 0.0
-                && mc.options.keyJump.isDown()) {
-            BlockPos under = mc.player.blockPosition().below(2);
-            if (mc.level.getBlockState(under).isAir()) {
-                placeAt(under);
-            }
+        boolean jumping = mc.player.getDeltaMovement().y > 0.0
+                || (mc.options.keyJump.isDown() && !mc.player.onGround());
+        if (jumping && !tower.get()) {
+            return;
         }
+        placeAt(below);
     }
 
     private boolean placeAt(BlockPos target) {

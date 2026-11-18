@@ -181,13 +181,8 @@ public final class InventoryUtils {
         if (stack.isEmpty()) {
             return 0.0;
         }
-        double armor = 0.0;
-        double toughness = 0.0;
-        stack.forEachModifier(EquipmentSlot.CHEST, (attribute, modifier) -> {
-            // Placeholder; real values are read per-slot below.
-        });
-        armor += attributeOf(stack, Attributes.ARMOR);
-        toughness += attributeOf(stack, Attributes.ARMOR_TOUGHNESS);
+        double armor = attributeOf(stack, Attributes.ARMOR);
+        double toughness = attributeOf(stack, Attributes.ARMOR_TOUGHNESS);
         return armor * 2.0 + toughness + ItemUtils.blastProtectionLevel(stack) * 1.5
                 + ItemUtils.protectionLevel(stack) * 1.2 + ItemUtils.unbreakingLevel(stack) * 0.2;
     }

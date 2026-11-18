@@ -10,6 +10,7 @@
     "MinecraftAccessor",
     "MultiPlayerGameModeAccessor",
     "ClientPacketListenerMixin",
+    "LocalPlayerMixin",
     "CameraMixin",
     "GameRendererMixin",
     "FogRendererMixin",

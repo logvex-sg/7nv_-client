@@ -6,12 +6,17 @@ import dev.sevennv.client.config.IntSetting;
 import dev.sevennv.client.module.Category;
 import dev.sevennv.client.module.Module;
 import dev.sevennv.client.utils.BlockUtils;
+import dev.sevennv.client.utils.BreakUtils;
+import dev.sevennv.client.utils.Rotation;
 import dev.sevennv.client.utils.Timer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * Automatically mines nearby ores when they are in range. The scan is limited
- * to loaded blocks and re-runs on a timer; breaking uses the vanilla game mode.
+ * to loaded blocks and re-runs on a timer. Each block is broken through the full
+ * vanilla break cycle, so the server sees ordinary mining and its own reach and
+ * break-time rules still apply.
  */
 public final class AutoMine extends Module {
     public AutoMine() {
@@ -29,8 +34,22 @@ public final class AutoMine extends Module {
     private final Timer timer = new Timer();
 
     @Override
+    public void onDisable() {
+        BreakUtils.cancel();
+    }
+
+    @Override
+    public void onWorldChange() {
+        BreakUtils.cancel();
+    }
+
+    @Override
     public void onTick() {
         if (mc.player == null || mc.level == null || mc.gameMode == null) {
+            return;
+        }
+        if (BreakUtils.breaking()) {
+            BreakUtils.tick();
             return;
         }
         if (!timer.tick(delay.get())) {
@@ -41,9 +60,9 @@ public final class AutoMine extends Module {
             return;
         }
         if (rotate.get()) {
-            dev.sevennv.client.utils.Rotation.face(net.minecraft.world.phys.Vec3.atCenterOf(target), true, 180f);
+            Rotation.face(Vec3.atCenterOf(target), true, 180f);
         }
-        mc.gameMode.startDestroyBlock(target, net.minecraft.core.Direction.UP);
+        BreakUtils.mine(target);
     }
 
     private BlockPos findTarget() {
@@ -65,7 +84,7 @@ public final class AutoMine extends Module {
                     if (!wanted) {
                         continue;
                     }
-                    double distance = mc.player.distanceToSqr(net.minecraft.world.phys.Vec3.atCenterOf(pos));
+                    double distance = mc.player.distanceToSqr(Vec3.atCenterOf(pos));
                     if (distance < bestDistance && distance <= range.get() * range.get()) {
                         bestDistance = distance;
                         best = pos;
