@@ -27,7 +27,7 @@ JDK lives elsewhere.
 ./gradlew clean build
 ```
 
-The mod JAR is written to `build/libs/sevennv-1.3.0.jar`. A sources JAR is
+The mod JAR is written to `build/libs/sevennv-1.4.0.jar`. A sources JAR is
 produced alongside it.
 
 ### Offline builds
@@ -58,7 +58,7 @@ the instance. Run `./gradlew build` first.
 
 1. Install Fabric Loader for 1.21.11.
 2. Put [Fabric API](https://modrinth.com/mod/fabric-api) for 1.21.11 in `.minecraft/mods/`.
-3. Put `build/libs/sevennv-1.3.0.jar` in `.minecraft/mods/`.
+3. Put `build/libs/sevennv-1.4.0.jar` in `.minecraft/mods/`.
 4. Launch the Fabric 1.21.11 profile.
 
 ### Kali Linux setup
@@ -133,7 +133,7 @@ Commands start with a dot so they never collide with the server's namespace.
 
 ## Modules
 
-138 modules across seven categories, plus 43 movable HUD elements.
+139 modules across seven categories, plus 43 movable HUD elements.
 
 **Combat (21)** — Crystal Aura, Crystal Assist, Auto Totem, Auto Armor, Auto
 Weapon, Surround, Hole Fill, Target HUD, Totem Counter, Crystal Counter, Damage

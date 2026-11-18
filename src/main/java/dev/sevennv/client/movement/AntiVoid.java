@@ -5,15 +5,15 @@ import dev.sevennv.client.config.IntSetting;
 import dev.sevennv.client.module.Category;
 import dev.sevennv.client.module.Module;
 import dev.sevennv.client.utils.NotificationManager;
-import dev.sevennv.client.utils.Timer;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * Detects a fall into the void and warns the player.
+ * Detects a fall into the void and warns the player once per fall.
  *
- * <p>When "Catch" is enabled the player's downward motion is zeroed for a short
- * window, giving them a moment to react. This is a client-side assist only: it
- * cannot and does not move the player back to safety.
+ * <p>When "Catch" is enabled the player's downward motion is zeroed while the
+ * fall is inside the warning window, giving them a moment to react. This is a
+ * client-side assist only: it cannot and does not move the player back to
+ * safety.
  */
 public final class AntiVoid extends Module {
     public AntiVoid() {
@@ -21,19 +21,19 @@ public final class AntiVoid extends Module {
         threshold = integer("Y level", "Warn below this height", -64, -128, 32);
         warningDistance = integer("Warn distance", "Blocks of free fall before warning", 5, 1, 40);
         catchFall = bool("Catch", "Zero downward motion while falling in the void", true);
-        cooldown = integer("Cooldown", "Milliseconds between warnings", 2000, 200, 10000);
     }
 
     private final IntSetting threshold;
     private final IntSetting warningDistance;
     private final BooleanSetting catchFall;
-    private final IntSetting cooldown;
 
-    private final Timer timer = new Timer();
+    private double fallStartY;
+    private boolean falling;
     private boolean warned;
 
     @Override
     public void onWorldChange() {
+        falling = false;
         warned = false;
     }
 
@@ -42,19 +42,24 @@ public final class AntiVoid extends Module {
         if (mc.player == null || mc.level == null) {
             return;
         }
-        boolean voidRisk = mc.player.getY() < threshold.get();
-        if (!voidRisk) {
+        boolean descending = mc.player.getDeltaMovement().y < -0.1 && !mc.player.onGround();
+        if (!descending || mc.player.getY() >= threshold.get()) {
+            falling = false;
             warned = false;
             return;
         }
-        if (catchFall.get() && mc.player.getDeltaMovement().y < 0) {
+        if (!falling) {
+            falling = true;
+            fallStartY = mc.player.getY();
+        }
+        if (catchFall.get()) {
             Vec3 motion = mc.player.getDeltaMovement();
             mc.player.setDeltaMovement(motion.x, 0.0, motion.z);
         }
-        if (!warned && timer.tick(cooldown.get())) {
+        if (!warned && fallStartY - mc.player.getY() >= warningDistance.get()) {
             warned = true;
-            NotificationManager.warn("Anti Void",
-                    "Falling below Y " + threshold.get() + " at " + Math.round(mc.player.getY()));
+            NotificationManager.warn("Anti Void", "Falling below Y " + threshold.get()
+                    + " at " + Math.round(mc.player.getY()) + " (" + warningDistance.get() + "+ blocks)");
         }
     }
 }

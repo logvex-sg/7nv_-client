@@ -2,7 +2,6 @@ package dev.sevennv.client.render;
 
 import dev.sevennv.client.config.BooleanSetting;
 import dev.sevennv.client.config.DoubleSetting;
-import dev.sevennv.client.config.KeybindSetting;
 import dev.sevennv.client.module.Category;
 import dev.sevennv.client.module.Module;
 import net.minecraft.world.phys.Vec3;
@@ -18,13 +17,11 @@ import net.minecraft.world.phys.Vec3;
 public final class Freecam extends Module {
     public Freecam() {
         super("Freecam", "Detaches the camera from your player", Category.RENDER);
-        key = keybindSetting("Key", "Key to toggle freecam");
         speed = number("Speed", "Movement speed in blocks per tick", 0.5, 0.05, 3.0, 0.05);
         vertical = number("Vertical", "Vertical movement multiplier", 1.0, 0.1, 3.0, 0.1);
         freezePlayer = bool("Freeze player", "Hold your player still while detached", true);
     }
 
-    private final KeybindSetting key;
     private final DoubleSetting speed;
     private final DoubleSetting vertical;
     private final BooleanSetting freezePlayer;

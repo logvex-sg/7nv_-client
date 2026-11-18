@@ -59,8 +59,16 @@ import net.fabricmc.api.ClientModInitializer;
 public final class SevennvClient implements ClientModInitializer {
     public static final String MOD_ID = "sevennv";
     public static final String MOD_NAME = "7nv_ Client";
-    public static final String VERSION = "1.0.0";
+    public static final String VERSION = resolveVersion();
     public static final org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory.getLogger(MOD_NAME);
+
+    /** Reads the mod version from fabric.mod.json so it never drifts from the build. */
+    private static String resolveVersion() {
+        return net.fabricmc.loader.api.FabricLoader.getInstance()
+                .getModContainer(MOD_ID)
+                .map(container -> container.getMetadata().getVersion().getFriendlyString())
+                .orElse("dev");
+    }
 
     private static SevennvClient instance;
 

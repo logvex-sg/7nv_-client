@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public abstract class FogRendererMixin {
     @Redirect(method = "setupFog",
             at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/client/renderer/fog/FogEnvironment;setupFog(Lnet/minecraft/client/renderer/fog/FogData;Lnet/minecraft/client/Camera;Lnet/minecraft/client/multiplayer/ClientLevel;FLnet/minecraft/client/DeltaTracker;)V"))
+                    target = "Lnet/minecraft/client/renderer/fog/environment/FogEnvironment;setupFog(Lnet/minecraft/client/renderer/fog/FogData;Lnet/minecraft/client/Camera;Lnet/minecraft/client/multiplayer/ClientLevel;FLnet/minecraft/client/DeltaTracker;)V"))
     private void sevennv$adjustFog(net.minecraft.client.renderer.fog.environment.FogEnvironment environment,
                                    FogData fogData, Camera camera, ClientLevel level, float renderDistance,
                                    DeltaTracker deltaTracker) {
