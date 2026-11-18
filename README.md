@@ -27,7 +27,7 @@ JDK lives elsewhere.
 ./gradlew clean build
 ```
 
-The mod JAR is written to `build/libs/sevennv-1.9.0.jar`. A sources JAR is
+The mod JAR is written to `build/libs/sevennv-1.9.1.jar`. A sources JAR is
 produced alongside it.
 
 ### Offline builds
@@ -58,7 +58,7 @@ the instance. Run `./gradlew build` first.
 
 1. Install Fabric Loader for 1.21.11.
 2. Put [Fabric API](https://modrinth.com/mod/fabric-api) for 1.21.11 in `.minecraft/mods/`.
-3. Put `build/libs/sevennv-1.9.0.jar` in `.minecraft/mods/`.
+3. Put `build/libs/sevennv-1.9.1.jar` in `.minecraft/mods/`.
 4. Launch the Fabric 1.21.11 profile.
 
 ### Kali Linux setup
@@ -82,7 +82,7 @@ the mod and prints the JAR path. Add `--prism` to also run the Prism installer.
 | Right Control | Open the HUD layout editor |
 
 Every module can be bound to its own key from the ClickGUI (click the key field,
-then press a key) or with `.bind <module>` followed by a key press.
+then press a key) or with `!bind <module>` followed by a key press.
 
 ### ClickGUI
 
@@ -113,22 +113,23 @@ positioned independently.
 
 ### Commands
 
-Commands start with a dot so they never collide with the server's namespace.
+Commands start with `!` so they never collide with the server's namespace. Type them
+in chat (they are handled locally and never sent) or as `/!command`.
 
 | Command | Description |
 | --- | --- |
-| `.toggle <module>` | Toggle a module |
-| `.bind <module>` | Bind a module to the next key you press |
-| `.friend <add\|remove\|list> [name]` | Manage the friend list |
-| `.enemy <add\|remove\|list> [name]` | Manage the enemy list |
-| `.config <save\|reload\|profile\|list\|create\|delete\|export\|import\|backup\|restore>` | Profiles, import/export and backups |
-| `.hud <element\|editor>` | Toggle a HUD element, or open the layout editor |
-| `.waypoint <add\|remove\|list\|clear> [name] [x y z]` | Manage stored waypoints |
-| `.marker <name\|remove <name>\|clear>` | Place or clear temporary map markers |
-| `.screenshot` | Capture a screenshot with the configured name |
-| `.effects` | List your active status effects |
-| `.ac` | Report the detected anti-cheat and server software |
-| `.help` | List the commands |
+| `!toggle <module>` | Toggle a module |
+| `!bind <module>` | Bind a module to the next key you press |
+| `!friend <add\|remove\|list> [name]` | Manage the friend list |
+| `!enemy <add\|remove\|list> [name]` | Manage the enemy list |
+| `!config <save\|reload\|profile\|list\|create\|delete\|export\|import\|backup\|restore>` | Profiles, import/export and backups |
+| `!hud <element\|editor>` | Toggle a HUD element, or open the layout editor |
+| `!waypoint <add\|remove\|list\|clear> [name] [x y z]` | Manage stored waypoints |
+| `!marker <name\|remove <name>\|clear>` | Place or clear temporary map markers |
+| `!screenshot` | Capture a screenshot with the configured name |
+| `!effects` | List your active status effects |
+| `!ac` | Report the detected anti-cheat and server software |
+| `!help` | List the commands |
 
 ---
 
@@ -256,7 +257,7 @@ Negativity, OpenEye and more; proxies such as Velocity and BungeeCord; server
 flavours such as Paper, Purpur, Folia, Fabric and Forge; and plugins such as
 ViaVersion, Geyser, LuckPerms, WorldEdit and PlaceholderAPI). Each match carries
 a confidence and, optionally, the signal it came from. It sends no probe packet
-and never touches the server's view of you. `.ac` prints the same summary in
+and never touches the server's view of you. `!ac` prints the same summary in
 chat, and the movable **Anti-cheat** HUD element shows the top match.
 
 **Detection Exposure** is a self-audit of *your own* footprint: for every
@@ -287,7 +288,7 @@ config/sevennv/
 * Saves are coalesced: a burst of changes writes once every two seconds, and
   the file is also flushed on disconnect.
 * **Profiles** hold the module states, settings and keybinds. Switch with
-  `.config profile <name>` or from the ClickGUI.
+  `!config profile <name>` or from the ClickGUI.
 * **Backups** are taken before a profile switch and before a restore.
 * **Import / export** copies a profile in or out of the config root.
 
@@ -312,7 +313,7 @@ dev.sevennv.client
 ├── config/                   ConfigManager, settings types, themes
 ├── events/                   EventManager and event types
 ├── module/                   Module base class, ModuleManager, keybinds
-├── command/                  dot commands
+├── command/                  chat commands (! prefix)
 ├── mixin/                    packet hooks and the bind capture
 └── utils/                    chat, packets, combat tracking, notifications
 ```

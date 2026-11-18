@@ -12,11 +12,13 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Client-side dot commands, e.g. {@code .toggle sprint} or {@code .friend add}.
- * A leading dot keeps them out of the server's command namespace entirely.
+ * Client-side chat commands, e.g. {@code !toggle sprint} or {@code !friend add}.
+ * The {@code !} prefix keeps them out of the server's command namespace: a line
+ * starting with it is handled locally and never sent, so it cannot collide with
+ * a real server command and cannot be logged as chat.
  */
 public final class CommandManager {
-    public static final String PREFIX = ".";
+    public static final String PREFIX = "!";
 
     private final List<Command> commands = new ArrayList<>();
 

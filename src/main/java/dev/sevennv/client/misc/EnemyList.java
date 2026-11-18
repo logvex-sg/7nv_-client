@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Enemy list overlay: shows the players marked as enemies, which the ESP and
  * targeting modules treat as priority. Enemies are managed with
- * {@code .enemy add <name>}.
+ * {@code !enemy add <name>}.
  */
 public final class EnemyList extends Module {
     public EnemyList() {

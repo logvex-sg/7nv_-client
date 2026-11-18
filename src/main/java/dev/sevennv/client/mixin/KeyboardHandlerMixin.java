@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Applies a pending {@code .bind} capture. The mixin only observes the key
+ * Applies a pending {@code !bind} capture. The mixin only observes the key
  * press to assign a module keybind and cancels the vanilla handling while a
  * bind is pending, so the captured key is not also treated as a game action.
  */

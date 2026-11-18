@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * Friend list overlay: shows the stored friends with their optional note.
- * Friends are managed with {@code .friend add <name>}; this module only
+ * Friends are managed with {@code !friend add <name>}; this module only
  * displays the list so it is visible without opening the GUI.
  */
 public final class FriendList extends Module {

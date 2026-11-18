@@ -243,7 +243,13 @@ final class ClientEvents {
     }
 
     private static boolean onSendChat(String message) {
-        // Macros and dot commands are client-local and must not reach the server.
+        // A chat line starting with the client prefix is a client command and
+        // is handled locally, so it is never sent to the server as chat.
+        dev.sevennv.client.command.CommandManager commands = SevennvClient.getCommandManager();
+        if (commands != null && message.startsWith(dev.sevennv.client.command.CommandManager.PREFIX)) {
+            commands.handle(message);
+            return false;
+        }
         ChatMacros macros = modules().get(ChatMacros.class);
         if (macros != null && macros.isEnabled() && macros.handle(message)) {
             return false;
@@ -253,9 +259,14 @@ final class ClientEvents {
     }
 
     private static boolean onSendCommand(String command) {
-        // Commands starting with '.' are client-local and never reach the server.
-        return SevennvClient.getCommandManager() == null
-                || !SevennvClient.getCommandManager().handle("." + command);
+        // A slash command that also carries the client prefix (e.g. /!toggle)
+        // is handled locally. Everything else is a real server command and is
+        // passed straight through, untouched.
+        dev.sevennv.client.command.CommandManager commands = SevennvClient.getCommandManager();
+        if (commands == null || !command.startsWith(dev.sevennv.client.command.CommandManager.PREFIX)) {
+            return true;
+        }
+        return !commands.handle(command);
     }
 
     private static void renderHud(GuiGraphics graphics, net.minecraft.client.DeltaTracker delta) {
