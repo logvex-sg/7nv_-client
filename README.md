@@ -27,7 +27,7 @@ JDK lives elsewhere.
 ./gradlew clean build
 ```
 
-The mod JAR is written to `build/libs/sevennv-1.7.0.jar`. A sources JAR is
+The mod JAR is written to `build/libs/sevennv-1.8.0.jar`. A sources JAR is
 produced alongside it.
 
 ### Offline builds
@@ -58,7 +58,7 @@ the instance. Run `./gradlew build` first.
 
 1. Install Fabric Loader for 1.21.11.
 2. Put [Fabric API](https://modrinth.com/mod/fabric-api) for 1.21.11 in `.minecraft/mods/`.
-3. Put `build/libs/sevennv-1.7.0.jar` in `.minecraft/mods/`.
+3. Put `build/libs/sevennv-1.8.0.jar` in `.minecraft/mods/`.
 4. Launch the Fabric 1.21.11 profile.
 
 ### Kali Linux setup
@@ -102,14 +102,14 @@ Press Right Control, then drag elements to move them and right-click an element
 to toggle it. Positions and visibility are saved when you close the editor.
 The array list is moved the same way as any other element.
 
-Available elements: array list, FPS, performance, ping, CPS, CPS graph,
+Available elements: array list, FPS, FPS graph, performance, ping, CPS, CPS graph,
 coordinates, direction, biome, compass, server information, server IP, speed,
 health, food, armour, durability, active effects, session timer, session clock,
 world time, totem counter, totem count, crystal count, enemy count, target HUD,
 movement, entity counter, inventory, packets, reach, TPS, lag meter, memory,
 keystrokes, text radar, radar, ping graph, item count, fall distance, attack
-cooldown, saturation and the watermark. Each one is toggled and positioned
-independently.
+cooldown, saturation, culling and the watermark. Each one is toggled and
+positioned independently.
 
 ### Commands
 
@@ -133,44 +133,46 @@ Commands start with a dot so they never collide with the server's namespace.
 
 ## Modules
 
-179 modules across seven categories, plus 55 movable HUD elements.
+187 modules across seven categories, plus 56 movable HUD elements.
 
-**Combat (29)** — Crystal Aura, Crystal Assist, Auto Totem, Auto Armor, Auto
+**Combat (30)** — Crystal Aura, Crystal Assist, Auto Totem, Auto Armor, Auto
 Weapon, Surround, Hole Fill, Target HUD, Totem Counter, Crystal Counter, Damage
 Calculator, Combat Notifications, Armor Durability, Weapon Information, Auto
 Clicker, Reach, Criticals, Auto Block, Auto Weapon Switch, Gapple Offhand, Auto
-Refill, Kill Aura, Trigger Bot, Auto Trap, Offhand Manager, Kill Tracker,
-Auto City, TNT Timer, Anti Anchor.
+Refill, Kill Aura, Trigger Bot, Auto Trap, Offhand Manager, Kill Tracker, Aim
+Assist, Auto City, TNT Timer, Anti Anchor.
 
-**Movement (31)** — Sprint, Auto Sprint, Elytra Utilities, Speed, Step, Safe
+**Movement (33)** — Sprint, Auto Sprint, Elytra Utilities, Speed, Step, Safe
 Walk, No Slow, Spider, Jump Assist, Movement HUD, Fall Distance, Velocity
 Display, Velocity, No Fall, Anti Void, Auto Walk, Fast Ladder, Long Jump, Ice
 Speed, Auto Jump Reset, No Jump Delay, Auto Jump, Auto Sneak, Gui Move, No
-Levitation, Keep Sprint, Sprint Reset, No Web, Water Speed, Elytra Boost, Auto Swim.
+Levitation, Keep Sprint, Sprint Reset, No Web, Water Speed, Elytra Boost, Auto
+Swim, Auto Parkour, Bunny Hop.
 
-**Render (38)** — Player ESP, Mob ESP, Storage ESP, Item ESP, Entity ESP,
+**Render (40)** — Player ESP, Mob ESP, Storage ESP, Item ESP, Entity ESP,
 Tracers, Nametags, Fullbright, Hole ESP, Chunk Borders, Entity Boxes, Health
 Bars, Projectile Trails, Custom Crosshair, Block Highlight, Logout Spots, Zoom,
 Freecam, Camera Clip, View Model, Anti Fog, No Render, No Hurt Cam, Aspect
 Ratio, Anti Blind, Damage Tint, No Weather, Trajectories, Breadcrumbs, Item
 Frame ESP, Search ESP, No Bob, True Sight, Entity Culling, Block Entity Culling,
-Pixel Blocks, Fast Graphics, Dynamic Render Distance.
+Pixel Blocks, Fast Graphics, Particle Limiter, Entity Distance, Dynamic Render
+Distance.
 
-**World (23)** — Waypoints, Death Coordinates, Stash Notes, Portal Information,
+**World (25)** — Waypoints, Death Coordinates, Stash Notes, Portal Information,
 Chunk Information, Biome Display, Coordinates, Map Markers, World Time,
 Container Information, Entity Counter, Auto Tool, Fast Place, Fast Break, Auto
 Mine, Chunk Finder, Stop Watch, Item Notifier, Spawner Finder, Chest Tracker,
-Sign Reader, Spawn ESP, Distance Tracker.
+Sign Reader, Spawn ESP, Distance Tracker, Scaffold, Nuker.
 
 **Player (24)** — Inventory Manager, Auto Eat, Armor HUD, Inventory HUD, Potion
 HUD, Totem HUD, Health HUD, Durability HUD, Item Information, Status Effects,
 Auto Respawn, Auto Log, Anti Hunger, Auto Pot, Refill, Auto Armor Switch, Chest
 Stealer, Auto Fish, Fast Use, Auto Tool Switch, Auto Drop, Auto Milk, Auto Exp, Health Warning.
 
-**Misc (21)** — Auto EZ, Auto GG, Auto Reconnect, Chat Timestamps, Chat Macros,
+**Misc (22)** — Auto EZ, Auto GG, Auto Reconnect, Chat Timestamps, Chat Macros,
 Screenshot Manager, Session Statistics, Friend List, Enemy List, Notifications,
 Module Search, Auto Tip, Announcer, Item Drop Guard, Chat Filter, Auto Shear,
-Auto Breed, Auto Mount, Auto Bucket, Chat Logger, Anti AFK.
+Auto Breed, Auto Mount, Auto Bucket, Chat Logger, Anti AFK, Middle Click.
 
 **Diagnostics (13)** — Packet Inspector, Packet Statistics, Protocol
 Information, Connection Diagnostics, Server Capability Detection, Desync
@@ -180,14 +182,18 @@ Inspector, Ping History, Entity Diagnostics, Frame Time, Packet Rate.
 A handful of modules hook the render pipeline through mixins (Zoom, Freecam,
 Camera Clip, View Model, Anti Fog, No Render, No Hurt Cam, Aspect Ratio, Anti
 Blind, Damage Tint, Fast Place, Fast Break, Velocity, No Jump Delay, Auto Fish,
-No Weather, Entity Culling, Block Entity Culling, Pixel Blocks).
+No Weather, Entity Culling, Block Entity Culling, Pixel Blocks, Particle Limiter).
 Each one only touches local client state — a projection matrix, a fog distance, a
 camera transform, a tesselation pose or a local cooldown — and never sends
 anything the server did not already expect.
 
 ### Performance
 
-Five modules cut work the client does without changing what the server sees:
+Performance modules are **always-on**. They cannot be switched off from the
+ClickGUI (they show a green lock), they start enabled on a fresh install, and
+they survive a disconnect. They only ever cut work the client does; none of them
+changes what the server sees, and none changes what you can and cannot see in a
+way that matters (a distant entity still exists — it is just not drawn).
 
 * **Entity Culling** — adds a distance cap and a view-cone test on top of the
   vanilla frustum check. Entities you are looking at, nametagged or glowing
@@ -195,19 +201,30 @@ Five modules cut work the client does without changing what the server sees:
 * **Block Entity Culling** — skips render-state extraction for distant or
   fully-buried chests, signs and the like, with per-type keeps (chests, signs,
   beacons, spawners) and a keep-looked-at guard.
-* **Fast Graphics** — one switch for cheap local options (clouds off, fewer
-  particles, ambient occlusion off, optional entity shadows and entity-distance
-  clamp). It restores your old values when switched off.
-* **Dynamic Render Distance** — nudges the render distance down when FPS is low
-  and back up when there is headroom, with hysteresis and a cooldown.
+* **Particle Limiter** — caps particles spawned per frame and drops particles
+  spawned far from the camera. Explosion, totem and portal particles are kept by
+  default because they carry information. A generous budget means ordinary play
+  is unchanged; only a burst is trimmed.
 * **Pixel Blocks** — shrinks each block model slightly so neighbouring blocks
   read as a thin 1px outline, the classic 1.8 look. Collision, light and
   hitboxes are untouched. Solid, cutout and translucent layers each toggle
   separately, and the shrink can fade out with distance.
 
+These stay **toggleable** because they change what you see, so you decide when to
+trade looks for frames:
+
+* **Fast Graphics** — one switch for cheap local options (clouds off, fewer
+  particles, ambient occlusion off, optional entity shadows). It restores your
+  old values when switched off.
+* **Dynamic Render Distance** — nudges the render distance down when FPS is low
+  and back up when there is headroom, with hysteresis and a cooldown.
+* **Entity Distance** — pulls the entity-draw distance in, optionally lowering it
+  further when the frame rate drops and recovering when there is headroom.
+
 The Culling HUD element shows entities culled this frame and the current render
-distance. Culling only ever skips something the client was about to draw; it
-never forces a draw vanilla skipped.
+distance, and the FPS Graph element plots the last few seconds of frame rate.
+Culling only ever skips something the client was about to draw; it never forces a
+draw vanilla skipped.
 
 ### Auto EZ and Auto GG
 
@@ -303,6 +320,13 @@ per-session state.
   use them within the rules of whatever server you play on.
 * Diagnostics are observational. There is deliberately no anti-cheat bypass, no
   DoS, no crash and no credential code anywhere in this project.
+* Performance modules (Entity Culling, Block Entity Culling, Particle Limiter,
+  Pixel Blocks) are always-on and cannot be switched off; the visual modules
+  (Fast Graphics, Dynamic Render Distance, Entity Distance) remain toggleable so
+  you control the looks-for-frames trade.
+* Scaffold and Nuker place and break blocks through the ordinary interaction and
+  destroy paths, so the server's own reach, break-time and anti-cheat rules still
+  apply. They are conveniences, not world-edits.
 
 ## License
 

@@ -3,6 +3,7 @@ package dev.sevennv.client.mixin;
 import dev.sevennv.client.SevennvClient;
 import dev.sevennv.client.module.ModuleManager;
 import dev.sevennv.client.render.NoRender;
+import dev.sevennv.client.render.ParticleLimiter;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.core.particles.ParticleOptions;
@@ -25,6 +26,11 @@ public abstract class ParticleEngineMixin {
                                          CallbackInfoReturnable<Particle> info) {
         ModuleManager manager = SevennvClient.getModuleManager();
         if (manager == null) {
+            return;
+        }
+        ParticleLimiter limiter = manager.get(ParticleLimiter.class);
+        if (limiter != null && limiter.shouldCull(options, x, y, z)) {
+            info.setReturnValue(null);
             return;
         }
         NoRender noRender = manager.get(NoRender.class);

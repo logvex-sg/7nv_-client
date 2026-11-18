@@ -190,7 +190,15 @@ public final class CategoryPanel {
             int indicator = module.isEnabled() ? theme.enabled : theme.disabled;
             RenderUtils.rect(graphics, x + 2, rowY + 2, 2, MODULE_HEIGHT - 4, indicator);
             RenderUtils.text(graphics, module.getName(), x + 7, rowY + 2, module.isEnabled() ? theme.text : theme.textDim);
-            if (!module.getSettings().isEmpty()) {
+            if (module.isAlwaysOn()) {
+                // Locked marker: a performance module cannot be switched off.
+                // The expand chevron still shows when it has tuning options.
+                int right = x + width - 5;
+                if (!module.getSettings().isEmpty()) {
+                    RenderUtils.textRight(graphics, module.isExpanded() ? "-" : "+", right - 7, rowY + 2, theme.textDim);
+                }
+                RenderUtils.textRight(graphics, "\u00a72\u2713", right, rowY + 2, theme.enabled);
+            } else if (!module.getSettings().isEmpty()) {
                 RenderUtils.textRight(graphics, module.isExpanded() ? "-" : "+", x + width - 5, rowY + 2, theme.textDim);
             }
             rowY += MODULE_HEIGHT;
@@ -237,7 +245,13 @@ public final class CategoryPanel {
         int rowY = y + HEADER_HEIGHT + 2 - (int) scroll;
         for (Module module : visibleModules()) {
             if (isInViewport(mouseY) && RenderUtils.hovered(mouseX, mouseY, x, rowY, width, MODULE_HEIGHT)) {
-                if (button == 0) {
+                if (module.isAlwaysOn()) {
+                    // Locked: left-click does nothing, right-click still opens
+                    // the settings so the tuning options remain reachable.
+                    if (button == 1 && !module.getSettings().isEmpty()) {
+                        module.setExpanded(!module.isExpanded());
+                    }
+                } else if (button == 0) {
                     module.toggle();
                 } else if (button == 1 && !module.getSettings().isEmpty()) {
                     module.setExpanded(!module.isExpanded());

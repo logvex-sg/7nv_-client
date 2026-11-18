@@ -21,6 +21,11 @@ public final class ModuleManager {
         modules.put(module.getClass(), module);
         ordered.add(module);
         ordered.sort(Comparator.comparing(Module::getName));
+        // Performance modules are always-on: force them enabled before any
+        // config load runs, so they are active even on a fresh install.
+        if (module.isAlwaysOn()) {
+            module.setEnabled(true);
+        }
     }
 
     public void registerAll(Module... entries) {

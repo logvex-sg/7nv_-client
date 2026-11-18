@@ -2,6 +2,7 @@ package dev.sevennv.client.module;
 
 import dev.sevennv.client.combat.ArmorDurability;
 import dev.sevennv.client.combat.AntiAnchor;
+import dev.sevennv.client.combat.AimAssist;
 import dev.sevennv.client.combat.TntTimer;
 import dev.sevennv.client.combat.AutoCity;
 import dev.sevennv.client.combat.AutoArmor;
@@ -39,6 +40,7 @@ import dev.sevennv.client.misc.ChatTimestamps;
 import dev.sevennv.client.misc.EnemyList;
 import dev.sevennv.client.misc.FriendList;
 import dev.sevennv.client.misc.ModuleSearch;
+import dev.sevennv.client.misc.MiddleClick;
 import dev.sevennv.client.misc.Notifications;
 import dev.sevennv.client.misc.ScreenshotManager;
 import dev.sevennv.client.misc.SessionStatistics;
@@ -166,6 +168,12 @@ import dev.sevennv.client.render.EntityCulling;
 import dev.sevennv.client.render.BlockEntityCulling;
 import dev.sevennv.client.render.PixelBlocks;
 import dev.sevennv.client.render.FastGraphics;
+import dev.sevennv.client.render.ParticleLimiter;
+import dev.sevennv.client.render.EntityDistance;
+import dev.sevennv.client.movement.AutoParkour;
+import dev.sevennv.client.movement.BunnyHop;
+import dev.sevennv.client.world.Scaffold;
+import dev.sevennv.client.world.Nuker;
 import dev.sevennv.client.world.SpawnerFinder;
 import dev.sevennv.client.world.ChestTracker;
 import dev.sevennv.client.world.SignReader;
@@ -220,6 +228,7 @@ public final class ModuleRegistry {
                 new AutoTrap(),
                 new OffhandManager(),
                 new KillTracker(),
+                new AimAssist(),
 
                 // Movement
                 new AutoSwim(),
@@ -253,6 +262,8 @@ public final class ModuleRegistry {
                 new NoWeb(),
                 new WaterSpeed(),
                 new ElytraBoost(),
+                new AutoParkour(),
+                new BunnyHop(),
 
                 // Render
                 new NewChunks(),
@@ -293,6 +304,8 @@ public final class ModuleRegistry {
                 new BlockEntityCulling(),
                 new PixelBlocks(),
                 new FastGraphics(),
+                new ParticleLimiter(),
+                new EntityDistance(),
 
                 // World
                 new DistanceTracker(),
@@ -318,6 +331,8 @@ public final class ModuleRegistry {
                 new ChestTracker(),
                 new SignReader(),
                 new MobSpawnEsp(),
+                new Scaffold(),
+                new Nuker(),
 
                 // Player
                 new HealthWarning(),
@@ -367,6 +382,7 @@ public final class ModuleRegistry {
                 new AutoMount(),
                 new AutoBucket(),
                 new AntiAfk(),
+                new MiddleClick(),
 
                 // Diagnostics
                 new PacketRate(),

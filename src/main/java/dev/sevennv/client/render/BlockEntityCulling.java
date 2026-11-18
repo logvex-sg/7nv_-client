@@ -24,6 +24,7 @@ import java.util.Set;
 public final class BlockEntityCulling extends Module {
     public BlockEntityCulling() {
         super("Block Entity Culling", "Skips chests, signs and other block entities you cannot see", Category.RENDER);
+        setAlwaysOn();
         maxDistance = number("Max distance", "Do not render block entities beyond this many blocks", 32.0, 4.0, 128.0, 4.0);
         cullBuried = bool("Cull buried", "Hide block entities with no visible face", true);
         keepContainers = bool("Keep chests", "Always render chests, barrels and shulkers", true);

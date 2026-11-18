@@ -101,7 +101,9 @@ final class ClientEvents {
             if (camera != null) {
                 net.minecraft.world.phys.Vec3 pos = camera.position();
                 dev.sevennv.client.render.PixelBlocks.updateCamera(pos.x, pos.y, pos.z);
+                dev.sevennv.client.render.ParticleLimiter.updateCamera(pos.x, pos.y, pos.z);
                 dev.sevennv.client.render.EntityCulling.onFrameStart();
+                dev.sevennv.client.render.ParticleLimiter.onFrameStart();
             }
         });
 

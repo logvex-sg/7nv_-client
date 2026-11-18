@@ -26,6 +26,7 @@ import net.minecraft.world.phys.Vec3;
 public final class EntityCulling extends Module {
     public EntityCulling() {
         super("Entity Culling", "Skips entities outside the view cone or too far away", Category.RENDER);
+        setAlwaysOn();
         maxDistance = number("Max distance", "Do not render entities beyond this many blocks", 64.0, 8.0, 256.0, 4.0);
         keepPlayers = number("Keep players", "Players closer than this are always rendered", 48.0, 0.0, 256.0, 4.0);
         cullMobs = bool("Cull mobs", "Apply the distance and cone test to mobs", true);

@@ -32,11 +32,26 @@ public abstract class Module {
     private boolean visibleInArraylist = true;
     private InputConstants.Key keybind = InputConstants.UNKNOWN;
     private boolean expanded;
+    private boolean alwaysOn;
 
     protected Module(String name, String description, Category category) {
         this.name = name;
         this.description = description;
         this.category = category;
+    }
+
+    /**
+     * Performance modules declare themselves always-on: they cannot be switched
+     * off, they start enabled and they survive a disconnect. Only non-visual
+     * optimisations should do this — anything that changes what you see stays a
+     * normal, toggleable module.
+     */
+    protected void setAlwaysOn() {
+        this.alwaysOn = true;
+    }
+
+    public boolean isAlwaysOn() {
+        return alwaysOn;
     }
 
     public String getName() {
@@ -60,6 +75,11 @@ public abstract class Module {
     }
 
     public void setEnabled(boolean state) {
+        // An always-on module can never be switched off; a stray disable call
+        // (disconnect sweep, config load) is ignored.
+        if (alwaysOn) {
+            state = true;
+        }
         if (this.enabled == state) {
             return;
         }
@@ -80,6 +100,9 @@ public abstract class Module {
     }
 
     public void toggle() {
+        if (alwaysOn) {
+            return;
+        }
         setEnabled(!enabled);
         ChatUtils.moduleState(this);
     }
@@ -153,7 +176,7 @@ public abstract class Module {
      * leaves a world.
      */
     public boolean survivesDisconnect() {
-        return false;
+        return alwaysOn;
     }
 
     protected <S extends Setting<?>> S register(S setting) {
