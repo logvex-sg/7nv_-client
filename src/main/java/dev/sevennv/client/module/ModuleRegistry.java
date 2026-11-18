@@ -2,6 +2,7 @@ package dev.sevennv.client.module;
 
 import dev.sevennv.client.combat.ArmorDurability;
 import dev.sevennv.client.combat.AutoArmor;
+import dev.sevennv.client.combat.AutoRefill;
 import dev.sevennv.client.combat.AutoTotem;
 import dev.sevennv.client.combat.AutoWeapon;
 import dev.sevennv.client.combat.CombatNotifications;
@@ -25,6 +26,8 @@ import dev.sevennv.client.diagnostics.ProtocolInformation;
 import dev.sevennv.client.diagnostics.ServerCapabilityDetection;
 import dev.sevennv.client.misc.AutoEz;
 import dev.sevennv.client.misc.AutoGg;
+import dev.sevennv.client.misc.ChatFilter;
+import dev.sevennv.client.misc.ItemDropGuard;
 import dev.sevennv.client.misc.AutoReconnect;
 import dev.sevennv.client.misc.ChatMacros;
 import dev.sevennv.client.misc.ChatTimestamps;
@@ -34,11 +37,15 @@ import dev.sevennv.client.misc.ModuleSearch;
 import dev.sevennv.client.misc.Notifications;
 import dev.sevennv.client.misc.ScreenshotManager;
 import dev.sevennv.client.misc.SessionStatistics;
+import dev.sevennv.client.movement.AutoJump;
+import dev.sevennv.client.movement.AutoSneak;
 import dev.sevennv.client.movement.AutoSprint;
 import dev.sevennv.client.movement.ElytraUtils;
+import dev.sevennv.client.movement.GuiMove;
 import dev.sevennv.client.movement.FallDistance;
 import dev.sevennv.client.movement.JumpAssist;
 import dev.sevennv.client.movement.MovementHud;
+import dev.sevennv.client.movement.NoLevitation;
 import dev.sevennv.client.movement.NoSlow;
 import dev.sevennv.client.movement.SafeWalk;
 import dev.sevennv.client.movement.Speed;
@@ -46,6 +53,9 @@ import dev.sevennv.client.movement.Spider;
 import dev.sevennv.client.movement.Sprint;
 import dev.sevennv.client.movement.StepHeight;
 import dev.sevennv.client.movement.VelocityDisplay;
+import dev.sevennv.client.player.AutoDrop;
+import dev.sevennv.client.player.AutoToolSwitch;
+import dev.sevennv.client.player.FastUse;
 import dev.sevennv.client.player.ArmorHud;
 import dev.sevennv.client.player.AutoEat;
 import dev.sevennv.client.player.DurabilityHud;
@@ -68,12 +78,18 @@ import dev.sevennv.client.render.ItemEsp;
 import dev.sevennv.client.render.LogoutSpots;
 import dev.sevennv.client.render.MobEsp;
 import dev.sevennv.client.render.Nametags;
+import dev.sevennv.client.render.Breadcrumbs;
+import dev.sevennv.client.render.NoWeather;
 import dev.sevennv.client.render.PlayerEsp;
+import dev.sevennv.client.render.Trajectories;
 import dev.sevennv.client.render.ProjectileTrails;
 import dev.sevennv.client.render.StorageEsp;
 import dev.sevennv.client.render.Tracers;
 import dev.sevennv.client.world.BiomeDisplay;
+import dev.sevennv.client.world.ChunkFinder;
 import dev.sevennv.client.world.ChunkInformation;
+import dev.sevennv.client.world.ItemNotifier;
+import dev.sevennv.client.world.StopWatch;
 import dev.sevennv.client.world.ContainerInformation;
 import dev.sevennv.client.world.Coordinates;
 import dev.sevennv.client.world.DeathCoordinates;
@@ -155,6 +171,7 @@ public final class ModuleRegistry {
                 new AutoBlock(),
                 new AutoWeaponSwitch(),
                 new GappleOffhand(),
+                new AutoRefill(),
 
                 // Movement
                 new Sprint(),
@@ -178,6 +195,10 @@ public final class ModuleRegistry {
                 new IceSpeed(),
                 new AutoJumpReset(),
                 new NoJumpDelay(),
+                new AutoJump(),
+                new AutoSneak(),
+                new GuiMove(),
+                new NoLevitation(),
 
                 // Render
                 new PlayerEsp(),
@@ -206,6 +227,9 @@ public final class ModuleRegistry {
                 new AspectRatio(),
                 new AntiBlind(),
                 new DamageTint(),
+                new NoWeather(),
+                new Trajectories(),
+                new Breadcrumbs(),
 
                 // World
                 new Waypoints(),
@@ -223,6 +247,9 @@ public final class ModuleRegistry {
                 new FastPlace(),
                 new FastBreak(),
                 new AutoMine(),
+                new ChunkFinder(),
+                new StopWatch(),
+                new ItemNotifier(),
 
                 // Player
                 new InventoryManager(),
@@ -243,6 +270,9 @@ public final class ModuleRegistry {
                 new AutoArmorSwitch(),
                 new ChestStealer(),
                 new AutoFish(),
+                new FastUse(),
+                new AutoToolSwitch(),
+                new AutoDrop(),
 
                 // Miscellaneous
                 new AutoEz(),
@@ -250,6 +280,7 @@ public final class ModuleRegistry {
                 new AutoReconnect(),
                 new ChatTimestamps(),
                 new ChatMacros(),
+                new ChatFilter(),
                 new ScreenshotManager(),
                 new SessionStatistics(),
                 new FriendList(),
@@ -258,6 +289,7 @@ public final class ModuleRegistry {
                 new ModuleSearch(),
                 new AutoTip(),
                 new Announcer(),
+                new ItemDropGuard(),
 
                 // Diagnostics
                 new PacketInspector(),

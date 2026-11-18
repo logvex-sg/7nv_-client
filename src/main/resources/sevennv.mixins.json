@@ -17,7 +17,8 @@
     "ItemInHandRendererMixin",
     "FishingHookAccessor",
     "LivingEntityAccessor",
-    "ParticleEngineMixin"
+    "ParticleEngineMixin",
+    "NoWeatherMixin"
   ],
   "injectors": {
     "defaultRequire": 1

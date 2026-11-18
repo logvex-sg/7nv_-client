@@ -1,47 +1,42 @@
 package dev.sevennv.client.movement;
 
 import dev.sevennv.client.config.BooleanSetting;
-import dev.sevennv.client.config.IntSetting;
 import dev.sevennv.client.module.Category;
 import dev.sevennv.client.module.Module;
-import dev.sevennv.client.utils.Timer;
 
 /**
- * Forces the sprint key state on while the player is moving forward, so sprint
- * is maintained without holding the key.
+ * Keeps you sprinting while you hold a movement key. Sprint is only forced when
+ * the vanilla conditions are already met (moving forward, food above the
+ * threshold), so it never fights the game's own logic.
  */
 public final class Sprint extends Module {
     public Sprint() {
-        super("Sprint", "Keeps you sprinting while moving forward", Category.MOVEMENT);
-        onlyForward = bool("Only forward", "Only sprint while moving forward", true);
-        ignoreHunger = bool("Ignore hunger", "Sprint even when hungry", true);
-        delay = integer("Delay", "Milliseconds between checks", 50, 0, 500);
+        super("Sprint", "Keeps you sprinting while moving", Category.MOVEMENT);
+        requireForward = bool("Require forward", "Only sprint while holding forward", true);
+        minFood = integer("Min food", "Do not force sprint below this food level", 6, 0, 20);
+        stopWhenSneaking = bool("Stop when sneaking", "Let go of sprint while sneaking", true);
     }
 
-    private final BooleanSetting onlyForward;
-    private final BooleanSetting ignoreHunger;
-    private final IntSetting delay;
-
-    private final Timer timer = new Timer();
+    private final BooleanSetting requireForward;
+    private final dev.sevennv.client.config.IntSetting minFood;
+    private final BooleanSetting stopWhenSneaking;
 
     @Override
     public void onTick() {
         if (mc.player == null) {
             return;
         }
-        if (!timer.tick(delay.get())) {
+        if (mc.player.getFoodData().getFoodLevel() <= minFood.get()) {
             return;
         }
-        if (mc.player.isShiftKeyDown() || mc.player.isUsingItem()) {
+        if (stopWhenSneaking.get() && mc.player.isShiftKeyDown()) {
             return;
         }
-        if (!ignoreHunger.get() && mc.player.getFoodData().getFoodLevel() <= 6) {
+        boolean moving = mc.player.zza > 0.0f;
+        if (requireForward.get() && !moving) {
             return;
         }
-        if (onlyForward.get() && mc.player.zza <= 0.0f) {
-            return;
-        }
-        if (!mc.player.isSprinting()) {
+        if (!mc.player.isSprinting() && (moving || !requireForward.get())) {
             mc.player.setSprinting(true);
         }
     }

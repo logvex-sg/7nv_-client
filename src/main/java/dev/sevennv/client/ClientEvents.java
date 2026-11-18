@@ -10,6 +10,7 @@ import dev.sevennv.client.hud.HudManager;
 import dev.sevennv.client.misc.AutoEz;
 import dev.sevennv.client.misc.AutoGg;
 import dev.sevennv.client.misc.AutoReconnect;
+import dev.sevennv.client.misc.ChatFilter;
 import dev.sevennv.client.misc.ChatMacros;
 import dev.sevennv.client.misc.ChatTimestamps;
 import dev.sevennv.client.misc.LastServer;
@@ -63,6 +64,28 @@ final class ClientEvents {
         });
         ClientReceiveMessageEvents.CHAT.register((message, signed, sender, params, timestamp) ->
                 dispatchChat(message, false));
+
+        // Chat messages are dropped before they reach the history, so a
+        // filtered message never appears and cannot be scrolled back to.
+        ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
+            ChatFilter filter = modules().get(ChatFilter.class);
+            return filter == null || !filter.isEnabled() || filter.allow(message.getString());
+        });
+
+        // Player chat arrives on its own channel; the same filter runs there.
+        // Your own messages are always kept so you can see what you sent.
+        ClientReceiveMessageEvents.ALLOW_CHAT.register((message, signed, sender, params, timestamp) -> {
+            ChatFilter filter = modules().get(ChatFilter.class);
+            if (filter == null || !filter.isEnabled()) {
+                return true;
+            }
+            Minecraft minecraft = Minecraft.getInstance();
+            if (sender != null && minecraft.player != null
+                    && sender.id().equals(minecraft.player.getUUID())) {
+                return true;
+            }
+            return filter.allow(message.getString());
+        });
 
         ClientSendMessageEvents.ALLOW_CHAT.register(ClientEvents::onSendChat);
         ClientSendMessageEvents.ALLOW_COMMAND.register(ClientEvents::onSendCommand);

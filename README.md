@@ -27,7 +27,7 @@ JDK lives elsewhere.
 ./gradlew clean build
 ```
 
-The mod JAR is written to `build/libs/sevennv-1.2.0.jar`. A sources JAR is
+The mod JAR is written to `build/libs/sevennv-1.3.0.jar`. A sources JAR is
 produced alongside it.
 
 ### Offline builds
@@ -58,7 +58,7 @@ the instance. Run `./gradlew build` first.
 
 1. Install Fabric Loader for 1.21.11.
 2. Put [Fabric API](https://modrinth.com/mod/fabric-api) for 1.21.11 in `.minecraft/mods/`.
-3. Put `build/libs/sevennv-1.2.0.jar` in `.minecraft/mods/`.
+3. Put `build/libs/sevennv-1.3.0.jar` in `.minecraft/mods/`.
 4. Launch the Fabric 1.21.11 profile.
 
 ### Kali Linux setup
@@ -107,8 +107,9 @@ coordinates, direction, biome, compass, server information, server IP, speed,
 health, food, armour, durability, active effects, session timer, session clock,
 world time, totem counter, totem count, crystal count, enemy count, target HUD,
 movement, entity counter, inventory, packets, reach, TPS, lag meter, memory,
-keystrokes, text radar, radar and the watermark. Each one is toggled and
-positioned independently.
+keystrokes, text radar, radar, ping graph, item count, fall distance, attack
+cooldown, saturation and the watermark. Each one is toggled and positioned
+independently.
 
 ### Commands
 
@@ -132,37 +133,39 @@ Commands start with a dot so they never collide with the server's namespace.
 
 ## Modules
 
-123 modules across seven categories, plus 38 movable HUD elements.
+138 modules across seven categories, plus 43 movable HUD elements.
 
-**Combat (20)** — Crystal Aura, Crystal Assist, Auto Totem, Auto Armor, Auto
+**Combat (21)** — Crystal Aura, Crystal Assist, Auto Totem, Auto Armor, Auto
 Weapon, Surround, Hole Fill, Target HUD, Totem Counter, Crystal Counter, Damage
 Calculator, Combat Notifications, Armor Durability, Weapon Information, Auto
-Clicker, Reach, Criticals, Auto Block, Auto Weapon Switch, Gapple Offhand.
+Clicker, Reach, Criticals, Auto Block, Auto Weapon Switch, Gapple Offhand, Auto
+Refill.
 
-**Movement (21)** — Sprint, Auto Sprint, Elytra Utilities, Speed, Step, Safe
+**Movement (25)** — Sprint, Auto Sprint, Elytra Utilities, Speed, Step, Safe
 Walk, No Slow, Spider, Jump Assist, Movement HUD, Fall Distance, Velocity
 Display, Velocity, No Fall, Anti Void, Auto Walk, Fast Ladder, Long Jump, Ice
-Speed, Auto Jump Reset, No Jump Delay.
+Speed, Auto Jump Reset, No Jump Delay, Auto Jump, Auto Sneak, Gui Move, No
+Levitation.
 
-**Render (26)** — Player ESP, Mob ESP, Storage ESP, Item ESP, Entity ESP,
+**Render (29)** — Player ESP, Mob ESP, Storage ESP, Item ESP, Entity ESP,
 Tracers, Nametags, Fullbright, Hole ESP, Chunk Borders, Entity Boxes, Health
 Bars, Projectile Trails, Custom Crosshair, Block Highlight, Logout Spots, Zoom,
 Freecam, Camera Clip, View Model, Anti Fog, No Render, No Hurt Cam, Aspect
-Ratio, Anti Blind, Damage Tint.
+Ratio, Anti Blind, Damage Tint, No Weather, Trajectories, Breadcrumbs.
 
-**World (15)** — Waypoints, Death Coordinates, Stash Notes, Portal Information,
+**World (18)** — Waypoints, Death Coordinates, Stash Notes, Portal Information,
 Chunk Information, Biome Display, Coordinates, Map Markers, World Time,
 Container Information, Entity Counter, Auto Tool, Fast Place, Fast Break, Auto
-Mine.
+Mine, Chunk Finder, Stop Watch, Item Notifier.
 
-**Player (18)** — Inventory Manager, Auto Eat, Armor HUD, Inventory HUD, Potion
+**Player (21)** — Inventory Manager, Auto Eat, Armor HUD, Inventory HUD, Potion
 HUD, Totem HUD, Health HUD, Durability HUD, Item Information, Status Effects,
 Auto Respawn, Auto Log, Anti Hunger, Auto Pot, Refill, Auto Armor Switch, Chest
-Stealer, Auto Fish.
+Stealer, Auto Fish, Fast Use, Auto Tool Switch, Auto Drop.
 
-**Misc (13)** — Auto EZ, Auto GG, Auto Reconnect, Chat Timestamps, Chat Macros,
+**Misc (15)** — Auto EZ, Auto GG, Auto Reconnect, Chat Timestamps, Chat Macros,
 Screenshot Manager, Session Statistics, Friend List, Enemy List, Notifications,
-Module Search, Auto Tip, Announcer.
+Module Search, Auto Tip, Announcer, Item Drop Guard, Chat Filter.
 
 **Diagnostics (10)** — Packet Inspector, Packet Statistics, Protocol
 Information, Connection Diagnostics, Server Capability Detection, Desync
@@ -171,7 +174,8 @@ Inspector, Ping History.
 
 A handful of modules hook the render pipeline through mixins (Zoom, Freecam,
 Camera Clip, View Model, Anti Fog, No Render, No Hurt Cam, Aspect Ratio, Anti
-Blind, Damage Tint, Fast Place, Fast Break, Velocity, No Jump Delay, Auto Fish).
+Blind, Damage Tint, Fast Place, Fast Break, Velocity, No Jump Delay, Auto Fish,
+No Weather).
 Each one only touches local client state — a projection matrix, a fog distance, a
 camera transform or a local cooldown — and never sends anything the server did
 not already expect.

@@ -37,6 +37,11 @@ import dev.sevennv.client.hud.MemoryHud;
 import dev.sevennv.client.hud.PacketHud;
 import dev.sevennv.client.hud.RadarHud;
 import dev.sevennv.client.hud.ReachHud;
+import dev.sevennv.client.hud.CooldownHud;
+import dev.sevennv.client.hud.FallDistanceHud;
+import dev.sevennv.client.hud.ItemCounterHud;
+import dev.sevennv.client.hud.PingGraphHud;
+import dev.sevennv.client.hud.SaturationHud;
 import dev.sevennv.client.hud.ServerIpHud;
 import dev.sevennv.client.hud.SessionTimerHud;
 import dev.sevennv.client.hud.TotemCountHud;
@@ -154,5 +159,10 @@ public final class SevennvClient implements ClientModInitializer {
         hudManager.register(new SessionTimerHud());
         hudManager.register(new CpsGraphHud());
         hudManager.register(new TextRadarHud());
+        hudManager.register(new PingGraphHud());
+        hudManager.register(new ItemCounterHud());
+        hudManager.register(new FallDistanceHud());
+        hudManager.register(new CooldownHud());
+        hudManager.register(new SaturationHud());
     }
 }
