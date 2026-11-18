@@ -139,6 +139,32 @@ import dev.sevennv.client.render.Zoom;
 import dev.sevennv.client.misc.Announcer;
 import dev.sevennv.client.misc.AutoTip;
 import dev.sevennv.client.diagnostics.PingHistory;
+import dev.sevennv.client.combat.KillAura;
+import dev.sevennv.client.combat.TriggerBot;
+import dev.sevennv.client.combat.AutoTrap;
+import dev.sevennv.client.combat.OffhandManager;
+import dev.sevennv.client.combat.KillTracker;
+import dev.sevennv.client.movement.KeepSprint;
+import dev.sevennv.client.movement.SprintReset;
+import dev.sevennv.client.movement.NoWeb;
+import dev.sevennv.client.movement.WaterSpeed;
+import dev.sevennv.client.movement.ElytraBoost;
+import dev.sevennv.client.render.ItemFrameEsp;
+import dev.sevennv.client.render.SearchEsp;
+import dev.sevennv.client.render.NoBob;
+import dev.sevennv.client.render.TrueSight;
+import dev.sevennv.client.world.SpawnerFinder;
+import dev.sevennv.client.world.ChestTracker;
+import dev.sevennv.client.world.SignReader;
+import dev.sevennv.client.world.MobSpawnEsp;
+import dev.sevennv.client.player.AutoMilk;
+import dev.sevennv.client.player.AutoExp;
+import dev.sevennv.client.misc.AutoShear;
+import dev.sevennv.client.misc.AutoBreed;
+import dev.sevennv.client.misc.AutoMount;
+import dev.sevennv.client.misc.AutoBucket;
+import dev.sevennv.client.diagnostics.EntityDiagnostics;
+import dev.sevennv.client.diagnostics.FrameTime;
 
 /**
  * Registers every module with the {@link ModuleManager}. Kept in one place so
@@ -172,6 +198,11 @@ public final class ModuleRegistry {
                 new AutoWeaponSwitch(),
                 new GappleOffhand(),
                 new AutoRefill(),
+                new KillAura(),
+                new TriggerBot(),
+                new AutoTrap(),
+                new OffhandManager(),
+                new KillTracker(),
 
                 // Movement
                 new Sprint(),
@@ -199,6 +230,11 @@ public final class ModuleRegistry {
                 new AutoSneak(),
                 new GuiMove(),
                 new NoLevitation(),
+                new KeepSprint(),
+                new SprintReset(),
+                new NoWeb(),
+                new WaterSpeed(),
+                new ElytraBoost(),
 
                 // Render
                 new PlayerEsp(),
@@ -230,6 +266,10 @@ public final class ModuleRegistry {
                 new NoWeather(),
                 new Trajectories(),
                 new Breadcrumbs(),
+                new ItemFrameEsp(),
+                new SearchEsp(),
+                new NoBob(),
+                new TrueSight(),
 
                 // World
                 new Waypoints(),
@@ -250,6 +290,10 @@ public final class ModuleRegistry {
                 new ChunkFinder(),
                 new StopWatch(),
                 new ItemNotifier(),
+                new SpawnerFinder(),
+                new ChestTracker(),
+                new SignReader(),
+                new MobSpawnEsp(),
 
                 // Player
                 new InventoryManager(),
@@ -273,6 +317,8 @@ public final class ModuleRegistry {
                 new FastUse(),
                 new AutoToolSwitch(),
                 new AutoDrop(),
+                new AutoMilk(),
+                new AutoExp(),
 
                 // Miscellaneous
                 new AutoEz(),
@@ -290,6 +336,10 @@ public final class ModuleRegistry {
                 new AutoTip(),
                 new Announcer(),
                 new ItemDropGuard(),
+                new AutoShear(),
+                new AutoBreed(),
+                new AutoMount(),
+                new AutoBucket(),
 
                 // Diagnostics
                 new PacketInspector(),
@@ -301,7 +351,9 @@ public final class ModuleRegistry {
                 new ChunkLoadingDiagnostics(),
                 new EntityMetadataInspector(),
                 new ClientStateInspector(),
-                new PingHistory()
+                new PingHistory(),
+                new EntityDiagnostics(),
+                new FrameTime()
         );
     }
 }

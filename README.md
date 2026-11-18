@@ -27,7 +27,7 @@ JDK lives elsewhere.
 ./gradlew clean build
 ```
 
-The mod JAR is written to `build/libs/sevennv-1.4.0.jar`. A sources JAR is
+The mod JAR is written to `build/libs/sevennv-1.5.0.jar`. A sources JAR is
 produced alongside it.
 
 ### Offline builds
@@ -58,7 +58,7 @@ the instance. Run `./gradlew build` first.
 
 1. Install Fabric Loader for 1.21.11.
 2. Put [Fabric API](https://modrinth.com/mod/fabric-api) for 1.21.11 in `.minecraft/mods/`.
-3. Put `build/libs/sevennv-1.4.0.jar` in `.minecraft/mods/`.
+3. Put `build/libs/sevennv-1.5.0.jar` in `.minecraft/mods/`.
 4. Launch the Fabric 1.21.11 profile.
 
 ### Kali Linux setup
@@ -133,44 +133,47 @@ Commands start with a dot so they never collide with the server's namespace.
 
 ## Modules
 
-139 modules across seven categories, plus 43 movable HUD elements.
+165 modules across seven categories, plus 49 movable HUD elements.
 
-**Combat (21)** — Crystal Aura, Crystal Assist, Auto Totem, Auto Armor, Auto
+**Combat (26)** — Crystal Aura, Crystal Assist, Auto Totem, Auto Armor, Auto
 Weapon, Surround, Hole Fill, Target HUD, Totem Counter, Crystal Counter, Damage
 Calculator, Combat Notifications, Armor Durability, Weapon Information, Auto
 Clicker, Reach, Criticals, Auto Block, Auto Weapon Switch, Gapple Offhand, Auto
-Refill.
+Refill, Kill Aura, Trigger Bot, Auto Trap, Offhand Manager, Kill Tracker.
 
-**Movement (25)** — Sprint, Auto Sprint, Elytra Utilities, Speed, Step, Safe
+**Movement (30)** — Sprint, Auto Sprint, Elytra Utilities, Speed, Step, Safe
 Walk, No Slow, Spider, Jump Assist, Movement HUD, Fall Distance, Velocity
 Display, Velocity, No Fall, Anti Void, Auto Walk, Fast Ladder, Long Jump, Ice
 Speed, Auto Jump Reset, No Jump Delay, Auto Jump, Auto Sneak, Gui Move, No
-Levitation.
+Levitation, Keep Sprint, Sprint Reset, No Web, Water Speed, Elytra Boost.
 
-**Render (29)** — Player ESP, Mob ESP, Storage ESP, Item ESP, Entity ESP,
+**Render (33)** — Player ESP, Mob ESP, Storage ESP, Item ESP, Entity ESP,
 Tracers, Nametags, Fullbright, Hole ESP, Chunk Borders, Entity Boxes, Health
 Bars, Projectile Trails, Custom Crosshair, Block Highlight, Logout Spots, Zoom,
 Freecam, Camera Clip, View Model, Anti Fog, No Render, No Hurt Cam, Aspect
-Ratio, Anti Blind, Damage Tint, No Weather, Trajectories, Breadcrumbs.
+Ratio, Anti Blind, Damage Tint, No Weather, Trajectories, Breadcrumbs, Item
+Frame ESP, Search ESP, No Bob, True Sight.
 
-**World (18)** — Waypoints, Death Coordinates, Stash Notes, Portal Information,
+**World (22)** — Waypoints, Death Coordinates, Stash Notes, Portal Information,
 Chunk Information, Biome Display, Coordinates, Map Markers, World Time,
 Container Information, Entity Counter, Auto Tool, Fast Place, Fast Break, Auto
-Mine, Chunk Finder, Stop Watch, Item Notifier.
+Mine, Chunk Finder, Stop Watch, Item Notifier, Spawner Finder, Chest Tracker,
+Sign Reader, Spawn ESP.
 
-**Player (21)** — Inventory Manager, Auto Eat, Armor HUD, Inventory HUD, Potion
+**Player (23)** — Inventory Manager, Auto Eat, Armor HUD, Inventory HUD, Potion
 HUD, Totem HUD, Health HUD, Durability HUD, Item Information, Status Effects,
 Auto Respawn, Auto Log, Anti Hunger, Auto Pot, Refill, Auto Armor Switch, Chest
-Stealer, Auto Fish, Fast Use, Auto Tool Switch, Auto Drop.
+Stealer, Auto Fish, Fast Use, Auto Tool Switch, Auto Drop, Auto Milk, Auto Exp.
 
-**Misc (15)** — Auto EZ, Auto GG, Auto Reconnect, Chat Timestamps, Chat Macros,
+**Misc (19)** — Auto EZ, Auto GG, Auto Reconnect, Chat Timestamps, Chat Macros,
 Screenshot Manager, Session Statistics, Friend List, Enemy List, Notifications,
-Module Search, Auto Tip, Announcer, Item Drop Guard, Chat Filter.
+Module Search, Auto Tip, Announcer, Item Drop Guard, Chat Filter, Auto Shear,
+Auto Breed, Auto Mount, Auto Bucket.
 
-**Diagnostics (10)** — Packet Inspector, Packet Statistics, Protocol
+**Diagnostics (12)** — Packet Inspector, Packet Statistics, Protocol
 Information, Connection Diagnostics, Server Capability Detection, Desync
 Detector, Chunk Loading Diagnostics, Entity Metadata Inspector, Client State
-Inspector, Ping History.
+Inspector, Ping History, Entity Diagnostics, Frame Time.
 
 A handful of modules hook the render pipeline through mixins (Zoom, Freecam,
 Camera Clip, View Model, Anti Fog, No Render, No Hurt Cam, Aspect Ratio, Anti
