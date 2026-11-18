@@ -5,11 +5,9 @@ import dev.sevennv.client.config.DoubleSetting;
 import dev.sevennv.client.module.Category;
 import dev.sevennv.client.module.Module;
 import dev.sevennv.client.render.WorldRenderUtils;
-import dev.sevennv.client.utils.BlockUtils;
 import dev.sevennv.client.utils.Timer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.Container;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
@@ -54,15 +52,26 @@ public final class ContainerInformation extends Module {
         containers.clear();
         int radius = (int) Math.ceil(range.get());
         BlockPos centre = mc.player.blockPosition();
-        for (int dx = -radius; dx <= radius; dx++) {
-            for (int dy = -radius; dy <= radius; dy++) {
-                for (int dz = -radius; dz <= radius; dz++) {
-                    BlockPos pos = centre.offset(dx, dy, dz);
-                    if (!mc.level.isLoaded(pos)) {
+        double radiusSq = (double) radius * radius;
+        // Walk the block entities of the nearby chunks rather than every block
+        // in the cube: a 16-block cube is ~36k lookups, while the same volume
+        // holds only a handful of containers.
+        int minChunkX = (centre.getX() - radius) >> 4;
+        int maxChunkX = (centre.getX() + radius) >> 4;
+        int minChunkZ = (centre.getZ() - radius) >> 4;
+        int maxChunkZ = (centre.getZ() + radius) >> 4;
+        for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
+            for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
+                var chunk = mc.level.getChunkSource().getChunk(chunkX, chunkZ,
+                        net.minecraft.world.level.chunk.status.ChunkStatus.FULL, false);
+                if (chunk == null) {
+                    continue;
+                }
+                for (BlockPos pos : chunk.getBlockEntitiesPos()) {
+                    if (centre.distSqr(pos) > radiusSq) {
                         continue;
                     }
-                    BlockState state = mc.level.getBlockState(pos);
-                    if (BlockUtils.isStorage(state) && mc.level.getBlockEntity(pos) instanceof Container) {
+                    if (mc.level.getBlockEntity(pos) instanceof Container) {
                         containers.add(pos.immutable());
                     }
                 }

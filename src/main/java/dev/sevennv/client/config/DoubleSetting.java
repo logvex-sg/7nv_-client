@@ -50,6 +50,9 @@ public class DoubleSetting extends Setting<Double> {
     }
 
     public void set(double newValue) {
+        if (Double.isNaN(newValue) || Double.isInfinite(newValue)) {
+            return;
+        }
         value = clamp(newValue);
     }
 

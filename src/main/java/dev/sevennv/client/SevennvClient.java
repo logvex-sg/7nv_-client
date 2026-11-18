@@ -4,6 +4,11 @@ import dev.sevennv.client.command.CommandManager;
 import dev.sevennv.client.config.ConfigManager;
 import dev.sevennv.client.events.EventManager;
 import dev.sevennv.client.hud.ArmorHud;
+import dev.sevennv.client.hud.PingBarHud;
+import dev.sevennv.client.hud.BiomeCoordsHud;
+import dev.sevennv.client.hud.WorldClockHud;
+import dev.sevennv.client.hud.SpeedBarHud;
+import dev.sevennv.client.hud.SessionInfoHud;
 import dev.sevennv.client.hud.XpHud;
 import dev.sevennv.client.hud.AirHud;
 import dev.sevennv.client.hud.SpeedBpsHud;
@@ -184,5 +189,10 @@ public final class SevennvClient implements ClientModInitializer {
         hudManager.register(new LookingAtHud());
         hudManager.register(new RotationHud());
         hudManager.register(new CombatStatsHud());
+        hudManager.register(new PingBarHud());
+        hudManager.register(new BiomeCoordsHud());
+        hudManager.register(new WorldClockHud());
+        hudManager.register(new SpeedBarHud());
+        hudManager.register(new SessionInfoHud());
     }
 }

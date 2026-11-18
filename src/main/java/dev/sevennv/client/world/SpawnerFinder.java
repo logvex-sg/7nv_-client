@@ -8,13 +8,13 @@ import dev.sevennv.client.utils.NotificationManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Blocks;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Locates spawner blocks near the player and announces newly found ones. The
- * scan walks loaded chunks only and keeps a bounded list, so it stays cheap on
- * the tick thread.
+ * scan walks loaded chunks only, is throttled to once a second and keeps a
+ * bounded set, so it stays cheap on the tick thread.
  */
 public final class SpawnerFinder extends Module {
     public SpawnerFinder() {
@@ -28,7 +28,7 @@ public final class SpawnerFinder extends Module {
     private final BooleanSetting notify;
     private final IntSetting maxResults;
 
-    private final List<BlockPos> found = new ArrayList<>();
+    private final Set<BlockPos> found = new LinkedHashSet<>();
     private int scanCooldown;
 
     @Override
@@ -54,22 +54,23 @@ public final class SpawnerFinder extends Module {
         scanCooldown = 20;
         int radius = range.get();
         BlockPos centre = mc.player.blockPosition();
+        BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();
         for (int dx = -radius; dx <= radius; dx += 2) {
             for (int dy = -radius; dy <= radius; dy += 2) {
                 for (int dz = -radius; dz <= radius; dz += 2) {
-                    BlockPos pos = centre.offset(dx, dy, dz);
-                    if (!mc.level.isLoaded(pos) || found.contains(pos)) {
+                    cursor.set(centre.getX() + dx, centre.getY() + dy, centre.getZ() + dz);
+                    if (!mc.level.isLoaded(cursor) || found.contains(cursor)) {
                         continue;
                     }
-                    var state = mc.level.getBlockState(pos);
+                    var state = mc.level.getBlockState(cursor);
                     if (state.is(Blocks.SPAWNER) || state.is(Blocks.TRIAL_SPAWNER)) {
                         if (found.size() >= maxResults.get()) {
                             return;
                         }
-                        found.add(pos.immutable());
+                        found.add(cursor.immutable());
                         if (notify.get()) {
-                            NotificationManager.info("Spawner", "Spawner at " + pos.getX() + ", "
-                                    + pos.getY() + ", " + pos.getZ());
+                            NotificationManager.info("Spawner", "Spawner at " + cursor.getX() + ", "
+                                    + cursor.getY() + ", " + cursor.getZ());
                         }
                     }
                 }

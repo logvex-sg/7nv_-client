@@ -16,7 +16,9 @@ public abstract class HudElement {
     private final String name;
     protected int x;
     protected int y;
-    private boolean enabled = true;
+    // Everything starts off: a fresh install shows no HUD clutter until the
+    // user turns elements on in the editor or with `.hud on`.
+    private boolean enabled;
 
     protected HudElement(String id, String name, int defaultX, int defaultY) {
         this.id = id;

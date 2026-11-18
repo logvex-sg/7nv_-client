@@ -18,19 +18,26 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * The ClickGUI: one draggable panel per category, a search box and a theme
- * selector. Deliberately flat — solid panels, 1px borders, no shadows.
+ * The ClickGUI: one compact, draggable panel per category, a search box and a
+ * small toolbar. Deliberately flat and dense — solid panels, 1px borders, no
+ * shadows, everything sized to fit a normal window without spilling off screen.
  */
 public final class ClickGuiScreen extends Screen {
-    private static final int SEARCH_HEIGHT = 14;
+    private static final int TOOLBAR_HEIGHT = 14;
+    private static final int PANEL_WIDTH = 106;
+    private static final int PANEL_GAP = 6;
+    private static final int PANEL_TOP = 24;
+    private static final int BOTTOM_MARGIN = 18;
+    private static final int SEARCH_WIDTH = 140;
+    private static final int BUTTON_GAP = 4;
 
     private final List<CategoryPanel> panels = new ArrayList<>();
-    private final List<ThemeButton> themeButtons = new ArrayList<>();
+    private final List<ToolbarButton> toolbarButtons = new ArrayList<>();
     private String search = "";
     private boolean searchFocused;
     private int searchX;
     private int searchY;
-    private int searchWidth = 150;
+    private int searchWidth = SEARCH_WIDTH;
     private double scale = 1.0;
 
     public ClickGuiScreen() {
@@ -40,44 +47,72 @@ public final class ClickGuiScreen extends Screen {
     @Override
     protected void init() {
         panels.clear();
-        themeButtons.clear();
+        toolbarButtons.clear();
 
         ConfigManager config = SevennvClient.getConfigManager();
         scale = config == null ? 1.0 : config.getGuiScaleFactor();
+        int scaledWidth = (int) (width / scale);
+        int scaledHeight = (int) (height / scale);
 
-        int columnWidth = 120;
-        int columnGap = 8;
-        int perRow = Math.max(1, (int) ((width / scale) - 20) / (columnWidth + columnGap));
+        layoutPanels(scaledWidth, scaledHeight);
+        layoutToolbar(scaledWidth);
+    }
+
+    /** Places the category panels in a compact grid that fits the window. */
+    private void layoutPanels(int scaledWidth, int scaledHeight) {
+        int perRow = Math.max(1, (scaledWidth - 8) / (PANEL_WIDTH + PANEL_GAP));
+        int available = scaledHeight - PANEL_TOP - BOTTOM_MARGIN;
+        int rows = (Category.values().length + perRow - 1) / perRow;
+        // Split the vertical space between the rows so the panels tile the screen.
+        int rowHeight = Math.max(120, available / Math.max(1, rows));
+
         int index = 0;
         for (Category category : Category.values()) {
             int column = index % perRow;
             int row = index / perRow;
-            int panelX = 10 + column * (columnWidth + columnGap);
-            int panelY = 30 + row * 130;
+            int panelX = 4 + column * (PANEL_WIDTH + PANEL_GAP);
+            int panelY = PANEL_TOP + row * rowHeight;
             List<dev.sevennv.client.module.Module> modules =
                     SevennvClient.getModuleManager().getByCategory(category);
-            panels.add(new CategoryPanel(category, modules, panelX, panelY));
+            CategoryPanel panel = new CategoryPanel(category, modules, panelX, panelY);
+            panel.setScreenSize(scaledWidth, scaledHeight);
+            panel.setGuiScale(scale);
+            panel.setMaxHeight(Math.max(60, rowHeight - 6));
+            panels.add(panel);
             index++;
         }
+    }
 
-        searchWidth = Math.min(180, (int) (width / scale) - 20);
-        searchX = 10;
-        searchY = 10;
+    private void layoutToolbar(int scaledWidth) {
+        searchWidth = Math.min(SEARCH_WIDTH, Math.max(80, scaledWidth / 3));
+        searchX = 4;
+        searchY = 5;
 
-        int buttonX = searchX + searchWidth + 8;
+        int buttonX = searchX + searchWidth + 6;
+        int buttonY = 5;
+        int buttonHeight = TOOLBAR_HEIGHT - 2;
+
         for (String preset : Theme.PRESETS) {
-            themeButtons.add(new ThemeButton(preset, buttonX, 10, RenderUtils.font().width(preset) + 8, SEARCH_HEIGHT));
-            buttonX += RenderUtils.font().width(preset) + 12;
+            int buttonWidth = RenderUtils.font().width(preset) + 8;
+            if (buttonX + buttonWidth > scaledWidth - 60) {
+                break;
+            }
+            toolbarButtons.add(new ToolbarButton(preset, preset, buttonX, buttonY, buttonWidth, buttonHeight));
+            buttonX += buttonWidth + BUTTON_GAP;
         }
-        themeButtons.add(new ThemeButton("Scale -", buttonX, 10, RenderUtils.font().width("Scale -") + 8, SEARCH_HEIGHT));
-        buttonX += RenderUtils.font().width("Scale -") + 12;
-        themeButtons.add(new ThemeButton("Scale +", buttonX, 10, RenderUtils.font().width("Scale +") + 8, SEARCH_HEIGHT));
+        int scaleMinus = RenderUtils.font().width("Scale -") + 8;
+        int scalePlus = RenderUtils.font().width("Scale +") + 8;
+        if (buttonX + scaleMinus + scalePlus + BUTTON_GAP <= scaledWidth - 4) {
+            toolbarButtons.add(new ToolbarButton("Scale -", "Scale -", buttonX, buttonY, scaleMinus, buttonHeight));
+            buttonX += scaleMinus + BUTTON_GAP;
+            toolbarButtons.add(new ToolbarButton("Scale +", "Scale +", buttonX, buttonY, scalePlus, buttonHeight));
+        }
     }
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         Theme theme = theme();
-        RenderUtils.rect(graphics, 0, 0, width, height, RenderUtils.withAlpha(theme.background, 0xB0));
+        RenderUtils.rect(graphics, 0, 0, width, height, RenderUtils.withAlpha(theme.background, 0xC0));
 
         var pose = graphics.pose();
         pose.pushMatrix();
@@ -86,29 +121,41 @@ public final class ClickGuiScreen extends Screen {
         int scaledMouseX = (int) (mouseX / scale);
         int scaledMouseY = (int) (mouseY / scale);
 
-        renderSearch(graphics, theme, scaledMouseX, scaledMouseY);
-        for (ThemeButton button : themeButtons) {
-            button.render(graphics, theme, scaledMouseX, scaledMouseY);
-        }
+        renderToolbar(graphics, theme, scaledMouseX, scaledMouseY);
         for (CategoryPanel panel : panels) {
             panel.render(graphics, scaledMouseX, scaledMouseY, search);
         }
+
         RenderUtils.text(graphics, "7nv_ Client  \u2022  Right Shift to close  \u2022  Scale "
-                + Math.round(scale * 100) + "%", 10, (int) (height / scale) - 12, theme.textDim);
+                + Math.round(scale * 100) + "%  \u2022  " + enabledCount() + " on",
+                6, (int) (height / scale) - 11, theme.textDim);
 
         pose.popMatrix();
     }
 
-    private void renderSearch(GuiGraphics graphics, Theme theme, int mouseX, int mouseY) {
-        boolean hovered = RenderUtils.hovered(mouseX, mouseY, searchX, searchY, searchWidth, SEARCH_HEIGHT);
-        RenderUtils.rect(graphics, searchX, searchY, searchWidth, SEARCH_HEIGHT, theme.panel);
-        RenderUtils.outline(graphics, searchX, searchY, searchWidth, SEARCH_HEIGHT,
+    private int enabledCount() {
+        return SevennvClient.getModuleManager() == null
+                ? 0 : SevennvClient.getModuleManager().getEnabled().size();
+    }
+
+    private void renderToolbar(GuiGraphics graphics, Theme theme, int mouseX, int mouseY) {
+        RenderUtils.rect(graphics, 0, 0, (int) (width / scale), TOOLBAR_HEIGHT, theme.header);
+        RenderUtils.rect(graphics, 0, TOOLBAR_HEIGHT, (int) (width / scale), 1, theme.border);
+
+        boolean hovered = RenderUtils.hovered(mouseX, mouseY, searchX, searchY, searchWidth, TOOLBAR_HEIGHT - 2);
+        RenderUtils.rect(graphics, searchX, searchY, searchWidth, TOOLBAR_HEIGHT - 2, theme.panel);
+        RenderUtils.outline(graphics, searchX, searchY, searchWidth, TOOLBAR_HEIGHT - 2,
                 searchFocused ? theme.accent : theme.border);
-        String display = search.isEmpty() && !searchFocused ? "\u00a78Search modules..." : search;
-        RenderUtils.text(graphics, display, searchX + 4, searchY + 3, search.isEmpty() && !searchFocused ? theme.textDim : theme.text);
+        boolean empty = search.isEmpty() && !searchFocused;
+        RenderUtils.text(graphics, empty ? "\u00a78Search..." : search, searchX + 4, searchY + 3,
+                empty ? theme.textDim : theme.text);
         if (searchFocused && (System.currentTimeMillis() / 500L) % 2 == 0) {
             int caretX = searchX + 4 + RenderUtils.font().width(search);
             RenderUtils.rect(graphics, caretX, searchY + 3, 1, 8, theme.text);
+        }
+
+        for (ToolbarButton button : toolbarButtons) {
+            button.render(graphics, theme, mouseX, mouseY);
         }
     }
 
@@ -118,17 +165,21 @@ public final class ClickGuiScreen extends Screen {
         double mouseY = event.y() / scale;
         int button = event.button();
 
-        if (RenderUtils.hovered(mouseX, mouseY, searchX, searchY, searchWidth, SEARCH_HEIGHT) && button == 0) {
+        if (button == 0 && RenderUtils.hovered(mouseX, mouseY, searchX, searchY, searchWidth, TOOLBAR_HEIGHT - 2)) {
             searchFocused = true;
             return true;
         }
         searchFocused = false;
 
-        for (ThemeButton themeButton : themeButtons) {
-            if (themeButton.mouseClicked(mouseX, mouseY, button)) {
-                return true;
+        if (mouseY <= TOOLBAR_HEIGHT) {
+            for (ToolbarButton toolbarButton : toolbarButtons) {
+                if (toolbarButton.mouseClicked(mouseX, mouseY, button)) {
+                    return true;
+                }
             }
+            return true;
         }
+
         for (CategoryPanel panel : panels) {
             if (panel.mouseClicked(mouseX, mouseY, button)) {
                 return true;
@@ -227,13 +278,17 @@ public final class ClickGuiScreen extends Screen {
         return config == null ? new Theme() : config.getTheme();
     }
 
-    private record ThemeButton(String preset, int x, int y, int width, int height) {
+    /** A small toolbar button: a theme preset or a scale nudge. */
+    private record ToolbarButton(String label, String action, int x, int y, int width, int height) {
         void render(GuiGraphics graphics, Theme theme, int mouseX, int mouseY) {
-            boolean selected = !preset.startsWith("Scale") && preset.equalsIgnoreCase(currentPresetName(theme));
+            ConfigManager config = SevennvClient.getConfigManager();
+            boolean selected = !action.startsWith("Scale")
+                    && config != null && action.equalsIgnoreCase(config.getThemePreset());
             boolean hovered = RenderUtils.hovered(mouseX, mouseY, x, y, width, height);
-            RenderUtils.rect(graphics, x, y, width, height, selected ? theme.highlight : hovered ? theme.hover : theme.panel);
+            RenderUtils.rect(graphics, x, y, width, height,
+                    selected ? theme.highlight : hovered ? theme.hover : theme.panel);
             RenderUtils.outline(graphics, x, y, width, height, selected ? theme.accent : theme.border);
-            RenderUtils.text(graphics, preset, x + 4, y + 3, selected ? theme.accent : theme.text);
+            RenderUtils.text(graphics, label, x + 4, y + 3, selected ? theme.accent : theme.text);
         }
 
         boolean mouseClicked(double mouseX, double mouseY, int button) {
@@ -244,19 +299,14 @@ public final class ClickGuiScreen extends Screen {
             if (config == null) {
                 return true;
             }
-            if (preset.equals("Scale -")) {
+            if (action.equals("Scale -")) {
                 config.setGuiScaleFactor(config.getGuiScaleFactor() - 0.25);
-            } else if (preset.equals("Scale +")) {
+            } else if (action.equals("Scale +")) {
                 config.setGuiScaleFactor(config.getGuiScaleFactor() + 0.25);
             } else {
-                config.applyTheme(preset);
+                config.applyTheme(action);
             }
             return true;
-        }
-
-        private static String currentPresetName(Theme theme) {
-            ConfigManager config = SevennvClient.getConfigManager();
-            return config == null ? Theme.PRESETS[0] : config.getThemePreset();
         }
     }
 }

@@ -42,6 +42,24 @@ public final class HudManager {
         }
     }
 
+    /** Turns every element on or off at once. */
+    public void setAllEnabled(boolean enabled) {
+        for (HudElement element : elements) {
+            element.setEnabled(enabled);
+        }
+    }
+
+    /** Number of currently enabled elements. */
+    public int enabledCount() {
+        int count = 0;
+        for (HudElement element : elements) {
+            if (element.isEnabled()) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     /** Draws every element as an outlined box for the layout editor. */
     public void renderEditor(GuiGraphics graphics, int textColor, int borderColor, HudElement selected) {
         for (HudElement element : elements) {

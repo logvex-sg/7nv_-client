@@ -40,15 +40,22 @@ public final class CommandManager {
         commands.add(new Command("friend", "friend <add|remove|list> [name]", "Manages the friend list", this::friends));
         commands.add(new Command("enemy", "enemy <add|remove|list> [name]", "Manages the enemy list", this::enemies));
         commands.add(new Command("config", "config <save|reload|profile <name>>", "Config control", this::config));
-        commands.add(new Command("hud", "hud <element|editor>", "Toggles a HUD element, or opens the layout editor", args -> {
+        commands.add(new Command("hud", "hud <element|editor|on|off>", "Toggles a HUD element, or opens the layout editor", args -> {
             if (args.length == 0) {
-                return "Usage: hud <element|editor>";
+                return "Usage: hud <element|editor|on|off>";
             }
-            if (args[0].equalsIgnoreCase("editor")) {
+            String action = args[0].toLowerCase(Locale.ROOT);
+            if (action.equals("editor")) {
                 net.minecraft.client.Minecraft.getInstance().setScreen(new dev.sevennv.client.gui.HudEditorScreen());
                 return null;
             }
-            HudElement element = SevennvClient.getHudManager().getById(args[0].toLowerCase(Locale.ROOT));
+            if (action.equals("on") || action.equals("off")) {
+                boolean on = action.equals("on");
+                SevennvClient.getHudManager().setAllEnabled(on);
+                SevennvClient.getConfigManager().markDirty();
+                return "All HUD elements " + (on ? "ON" : "OFF");
+            }
+            HudElement element = SevennvClient.getHudManager().getById(action);
             if (element == null) {
                 return "Unknown HUD element: " + args[0];
             }
@@ -195,6 +202,13 @@ public final class CommandManager {
             }
             case "restore" -> {
                 return config.restoreLatestBackup() ? "Restored the newest backup" : "No backup found";
+            }
+            case "reset" -> {
+                SevennvClient.getModuleManager().disableAll();
+                SevennvClient.getHudManager().setAllEnabled(false);
+                config.markDirty();
+                config.save();
+                return "Reset: all modules and HUD elements disabled";
             }
             default -> {
                 return "Unknown config action";

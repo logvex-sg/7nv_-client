@@ -2,38 +2,49 @@ package dev.sevennv.client.world;
 
 import dev.sevennv.client.config.ColorSetting;
 import dev.sevennv.client.config.DoubleSetting;
+import dev.sevennv.client.config.IntSetting;
 import dev.sevennv.client.module.Category;
 import dev.sevennv.client.module.Module;
 import dev.sevennv.client.render.WorldRenderUtils;
+import dev.sevennv.client.utils.Timer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Draws the text of nearby signs above them, so a sign can be read without
  * walking up to it. Only signs whose block entity is already loaded are read;
- * nothing is requested from the server.
+ * nothing is requested from the server. The scan is throttled and confined to a
+ * vertical band around the player, because a full cube at range 24 would be
+ * over a hundred thousand block lookups.
  */
 public final class SignReader extends Module {
+    private static final int VERTICAL_BAND = 8;
+
     public SignReader() {
         super("Sign Reader", "Shows nearby sign text", Category.WORLD);
-        range = number("Range", "Maximum read distance", 24.0, 2.0, 64.0, 2.0);
+        range = number("Range", "Maximum read distance", 16.0, 2.0, 48.0, 2.0);
         color = color("Color", "Text colour", 0xFFFFE080);
         scan = integer("Scan", "Milliseconds between scans", 500, 100, 5000);
     }
 
     private final DoubleSetting range;
     private final ColorSetting color;
-    private final dev.sevennv.client.config.IntSetting scan;
+    private final IntSetting scan;
 
-    private final List<BlockPos> signs = new ArrayList<>();
-    private final dev.sevennv.client.utils.Timer timer = new dev.sevennv.client.utils.Timer();
+    private final Set<BlockPos> signs = new HashSet<>();
+    private final Timer timer = new Timer();
 
     @Override
     public void onWorldChange() {
+        signs.clear();
+    }
+
+    @Override
+    public void onDisable() {
         signs.clear();
     }
 
@@ -45,15 +56,16 @@ public final class SignReader extends Module {
         signs.clear();
         int radius = (int) Math.ceil(range.get());
         BlockPos centre = mc.player.blockPosition();
+        BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();
         for (int dx = -radius; dx <= radius; dx++) {
-            for (int dy = -radius; dy <= radius; dy++) {
-                for (int dz = -radius; dz <= radius; dz++) {
-                    BlockPos pos = centre.offset(dx, dy, dz);
-                    if (!mc.level.isLoaded(pos)) {
+            for (int dz = -radius; dz <= radius; dz++) {
+                for (int dy = -VERTICAL_BAND; dy <= VERTICAL_BAND; dy++) {
+                    cursor.set(centre.getX() + dx, centre.getY() + dy, centre.getZ() + dz);
+                    if (!mc.level.isLoaded(cursor)) {
                         continue;
                     }
-                    if (mc.level.getBlockEntity(pos) instanceof SignBlockEntity) {
-                        signs.add(pos.immutable());
+                    if (mc.level.getBlockEntity(cursor) instanceof SignBlockEntity) {
+                        signs.add(cursor.immutable());
                     }
                 }
             }

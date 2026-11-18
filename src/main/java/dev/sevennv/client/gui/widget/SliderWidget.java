@@ -71,6 +71,9 @@ public final class SliderWidget extends SettingWidget {
     private void applyFromMouse(double mouseX) {
         int trackX = x + 3;
         int trackWidth = width - 6;
+        if (trackWidth <= 0 || max - min <= 0) {
+            return;
+        }
         double ratio = (mouseX - trackX) / trackWidth;
         ratio = Math.max(0.0, Math.min(1.0, ratio));
         setter.accept(min + (max - min) * ratio);

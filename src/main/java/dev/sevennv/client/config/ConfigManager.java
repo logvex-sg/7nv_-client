@@ -56,6 +56,13 @@ public final class ConfigManager {
     private JsonObject guiLayout = new JsonObject();
     private JsonObject extra = new JsonObject();
 
+    /**
+     * Bumped whenever the default panel layout changes. A config written by an
+     * older build carries stale panel positions, so the stored layout is dropped
+     * once and the panels fall back to the current grid.
+     */
+    private static final int LAYOUT_VERSION = 2;
+
     public ConfigManager(ModuleManager modules, HudManager hud) {
         this.modules = modules;
         this.hud = hud;
@@ -201,7 +208,13 @@ public final class ConfigManager {
                 theme.fromJson(object.getAsJsonObject("theme"));
             }
             if (object.has("guiLayout") && object.get("guiLayout").isJsonObject()) {
-                guiLayout = object.getAsJsonObject("guiLayout");
+                int stored = integer(object, "layoutVersion", 1);
+                if (stored >= LAYOUT_VERSION) {
+                    guiLayout = object.getAsJsonObject("guiLayout");
+                } else {
+                    SevennvClient.LOGGER.info("Dropping the saved ClickGUI layout (v{} -> v{})",
+                            stored, LAYOUT_VERSION);
+                }
             }
             if (object.has("hud") && object.get("hud").isJsonObject() && hud != null) {
                 hud.fromJson(object.getAsJsonObject("hud"));
@@ -298,6 +311,7 @@ public final class ConfigManager {
         object.addProperty("arraylistRainbow", arraylistRainbow);
         object.addProperty("arraylistSuffix", arraylistSuffix);
         object.add("theme", theme.toJson());
+        object.addProperty("layoutVersion", LAYOUT_VERSION);
         object.add("guiLayout", guiLayout);
         if (hud != null) {
             object.add("hud", hud.toJson());

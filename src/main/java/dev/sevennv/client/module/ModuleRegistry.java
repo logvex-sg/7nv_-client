@@ -1,6 +1,9 @@
 package dev.sevennv.client.module;
 
 import dev.sevennv.client.combat.ArmorDurability;
+import dev.sevennv.client.combat.AntiAnchor;
+import dev.sevennv.client.combat.TntTimer;
+import dev.sevennv.client.combat.AutoCity;
 import dev.sevennv.client.combat.AutoArmor;
 import dev.sevennv.client.combat.AutoRefill;
 import dev.sevennv.client.combat.AutoTotem;
@@ -16,6 +19,7 @@ import dev.sevennv.client.combat.TargetHud;
 import dev.sevennv.client.combat.TotemCounter;
 import dev.sevennv.client.combat.WeaponInformation;
 import dev.sevennv.client.diagnostics.ChunkLoadingDiagnostics;
+import dev.sevennv.client.diagnostics.PacketRate;
 import dev.sevennv.client.diagnostics.ClientStateInspector;
 import dev.sevennv.client.diagnostics.ConnectionDiagnostics;
 import dev.sevennv.client.diagnostics.DesyncDetector;
@@ -25,6 +29,7 @@ import dev.sevennv.client.diagnostics.PacketStatistics;
 import dev.sevennv.client.diagnostics.ProtocolInformation;
 import dev.sevennv.client.diagnostics.ServerCapabilityDetection;
 import dev.sevennv.client.misc.AutoEz;
+import dev.sevennv.client.misc.ChatLogger;
 import dev.sevennv.client.misc.AutoGg;
 import dev.sevennv.client.misc.ChatFilter;
 import dev.sevennv.client.misc.ItemDropGuard;
@@ -38,6 +43,7 @@ import dev.sevennv.client.misc.Notifications;
 import dev.sevennv.client.misc.ScreenshotManager;
 import dev.sevennv.client.misc.SessionStatistics;
 import dev.sevennv.client.movement.AutoJump;
+import dev.sevennv.client.movement.AutoSwim;
 import dev.sevennv.client.movement.AutoSneak;
 import dev.sevennv.client.movement.AutoSprint;
 import dev.sevennv.client.movement.ElytraUtils;
@@ -54,6 +60,7 @@ import dev.sevennv.client.movement.Sprint;
 import dev.sevennv.client.movement.StepHeight;
 import dev.sevennv.client.movement.VelocityDisplay;
 import dev.sevennv.client.player.AutoDrop;
+import dev.sevennv.client.player.HealthWarning;
 import dev.sevennv.client.player.AutoToolSwitch;
 import dev.sevennv.client.player.FastUse;
 import dev.sevennv.client.player.ArmorHud;
@@ -67,6 +74,7 @@ import dev.sevennv.client.player.PotionHud;
 import dev.sevennv.client.player.StatusEffects;
 import dev.sevennv.client.player.TotemHud;
 import dev.sevennv.client.render.BlockHighlight;
+import dev.sevennv.client.render.NewChunks;
 import dev.sevennv.client.render.ChunkBorders;
 import dev.sevennv.client.render.CustomCrosshair;
 import dev.sevennv.client.render.EntityBoxes;
@@ -86,6 +94,7 @@ import dev.sevennv.client.render.ProjectileTrails;
 import dev.sevennv.client.render.StorageEsp;
 import dev.sevennv.client.render.Tracers;
 import dev.sevennv.client.world.BiomeDisplay;
+import dev.sevennv.client.world.DistanceTracker;
 import dev.sevennv.client.world.ChunkFinder;
 import dev.sevennv.client.world.ChunkInformation;
 import dev.sevennv.client.world.ItemNotifier;
@@ -177,6 +186,9 @@ public final class ModuleRegistry {
     public static void registerAll(ModuleManager manager) {
         manager.registerAll(
                 // Combat
+                new AutoCity(),
+                new TntTimer(),
+                new AntiAnchor(),
                 new CrystalAura(),
                 new CrystalAssist(),
                 new AutoTotem(),
@@ -205,6 +217,7 @@ public final class ModuleRegistry {
                 new KillTracker(),
 
                 // Movement
+                new AutoSwim(),
                 new Sprint(),
                 new AutoSprint(),
                 new ElytraUtils(),
@@ -237,6 +250,7 @@ public final class ModuleRegistry {
                 new ElytraBoost(),
 
                 // Render
+                new NewChunks(),
                 new PlayerEsp(),
                 new MobEsp(),
                 new StorageEsp(),
@@ -272,6 +286,7 @@ public final class ModuleRegistry {
                 new TrueSight(),
 
                 // World
+                new DistanceTracker(),
                 new Waypoints(),
                 new DeathCoordinates(),
                 new StashNotes(),
@@ -296,6 +311,7 @@ public final class ModuleRegistry {
                 new MobSpawnEsp(),
 
                 // Player
+                new HealthWarning(),
                 new InventoryManager(),
                 new AutoEat(),
                 new ArmorHud(),
@@ -321,6 +337,7 @@ public final class ModuleRegistry {
                 new AutoExp(),
 
                 // Miscellaneous
+                new ChatLogger(),
                 new AutoEz(),
                 new AutoGg(),
                 new AutoReconnect(),
@@ -342,6 +359,7 @@ public final class ModuleRegistry {
                 new AutoBucket(),
 
                 // Diagnostics
+                new PacketRate(),
                 new PacketInspector(),
                 new PacketStatistics(),
                 new ProtocolInformation(),

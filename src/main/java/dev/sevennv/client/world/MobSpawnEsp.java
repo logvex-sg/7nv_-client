@@ -54,14 +54,15 @@ public final class MobSpawnEsp extends Module {
         spots.clear();
         int radius = range.get();
         BlockPos centre = mc.player.blockPosition();
+        BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();
         for (int dx = -radius; dx <= radius; dx++) {
             for (int dz = -radius; dz <= radius; dz++) {
                 for (int dy = -4; dy <= 4; dy++) {
-                    BlockPos pos = centre.offset(dx, dy, dz);
-                    if (!mc.level.isLoaded(pos) || !isSpawnable(pos)) {
+                    cursor.set(centre.getX() + dx, centre.getY() + dy, centre.getZ() + dz);
+                    if (!mc.level.isLoaded(cursor) || !isSpawnable(cursor)) {
                         continue;
                     }
-                    spots.add(pos.immutable());
+                    spots.add(cursor.immutable());
                     if (spots.size() >= maxBlocks.get()) {
                         return;
                     }

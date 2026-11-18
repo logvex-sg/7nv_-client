@@ -11,6 +11,7 @@ import dev.sevennv.client.render.RenderUtils;
 import net.minecraft.client.gui.GuiGraphics;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -19,10 +20,17 @@ import java.util.Map;
 /**
  * A draggable category window holding its modules. Modules expand in place to
  * reveal their settings, exactly like the classic 1.8 panels.
+ *
+ * <p>The module list scrolls when it is taller than the window, so a category
+ * with dozens of modules never runs off the bottom of the screen.
  */
 public final class CategoryPanel {
     public static final int HEADER_HEIGHT = 14;
     private static final int MODULE_HEIGHT = 12;
+    private static final int DEFAULT_MAX_CONTENT_HEIGHT = 240;
+    private static final int SCROLL_STEP = 14;
+    private static final Comparator<Module> BY_NAME =
+            Comparator.comparing(module -> module.getName().toLowerCase(Locale.ROOT));
 
     private final Category category;
     private final List<Module> modules;
@@ -36,10 +44,16 @@ public final class CategoryPanel {
     private int dragOffsetX;
     private int dragOffsetY;
     private String filter = "";
+    private double scroll;
+    private int screenWidth = 320;
+    private int screenHeight = 240;
+    private double guiScale = 1.0;
+    private int maxContentHeight = DEFAULT_MAX_CONTENT_HEIGHT;
 
     public CategoryPanel(Category category, List<Module> modules, int defaultX, int defaultY) {
         this.category = category;
-        this.modules = modules;
+        this.modules = new ArrayList<>(modules);
+        this.modules.sort(BY_NAME);
         ConfigManager config = SevennvClient.getConfigManager();
         int[] position = config == null ? new int[]{defaultX, defaultY}
                 : config.getWindowPosition(category.name(), defaultX, defaultY);
@@ -80,19 +94,33 @@ public final class CategoryPanel {
         return result;
     }
 
-    /** Total height for the current expansion state, used for hit testing. */
-    public int getHeight() {
-        if (collapsed) {
-            return HEADER_HEIGHT;
-        }
-        int height = HEADER_HEIGHT + 2;
+    /** Height of the module list only, before the scroll limit is applied. */
+    private int contentHeight() {
+        int height = 0;
         for (Module module : visibleModules()) {
             height += MODULE_HEIGHT;
             if (module.isExpanded()) {
                 height += settingsHeight(module);
             }
         }
-        return height + 2;
+        return height;
+    }
+
+    /** Visible height of the module list. */
+    private int viewportHeight() {
+        return Math.max(MODULE_HEIGHT, Math.min(maxContentHeight, contentHeight()));
+    }
+
+    /** Total height for the current expansion state, used for hit testing. */
+    public int getHeight() {
+        if (collapsed) {
+            return HEADER_HEIGHT;
+        }
+        return HEADER_HEIGHT + 2 + viewportHeight() + 2;
+    }
+
+    private int maxScroll() {
+        return Math.max(0, contentHeight() - viewportHeight());
     }
 
     private int settingsHeight(Module module) {
@@ -128,18 +156,34 @@ public final class CategoryPanel {
         setFilter(globalFilter);
         Theme theme = theme();
         int height = getHeight();
+        clampToScreen();
 
         RenderUtils.rect(graphics, x, y, width, height, theme.panel);
         RenderUtils.outline(graphics, x, y, width, height, theme.border);
-        RenderUtils.rect(graphics, x, y, width, HEADER_HEIGHT, theme.header);
-        RenderUtils.text(graphics, category.getDisplayName(), x + 4, y + 3, theme.text);
-        RenderUtils.textRight(graphics, collapsed ? "+" : "-", x + width - 5, y + 3, theme.textDim);
 
-        if (collapsed) {
-            return;
+        if (!collapsed) {
+            int top = y + HEADER_HEIGHT + 2;
+            int bottom = top + viewportHeight();
+            // Scissor rectangles are in real screen space, but the panel is drawn
+            // inside a scaled pose, so the rect has to be scaled up to match.
+            int left = (int) Math.floor((x + 1) * guiScale);
+            int right = (int) Math.ceil((x + width - 1) * guiScale);
+            int topPx = (int) Math.floor(top * guiScale);
+            int bottomPx = (int) Math.ceil(bottom * guiScale);
+            graphics.enableScissor(left, topPx, Math.max(left + 1, right), Math.max(topPx + 1, bottomPx));
+            renderModules(graphics, theme, mouseX, mouseY, top);
+            graphics.disableScissor();
         }
 
-        int rowY = y + HEADER_HEIGHT + 2;
+        // Header last so the scrolled content never bleeds over it.
+        RenderUtils.rect(graphics, x, y, width, HEADER_HEIGHT, theme.header);
+        RenderUtils.outline(graphics, x, y, width, HEADER_HEIGHT, theme.border);
+        RenderUtils.text(graphics, category.getDisplayName(), x + 4, y + 3, theme.text);
+        RenderUtils.textRight(graphics, collapsed ? "+" : "-", x + width - 5, y + 3, theme.textDim);
+    }
+
+    private void renderModules(GuiGraphics graphics, Theme theme, int mouseX, int mouseY, int top) {
+        int rowY = top - (int) scroll;
         for (Module module : visibleModules()) {
             boolean hovered = RenderUtils.hovered(mouseX, mouseY, x, rowY, width, MODULE_HEIGHT);
             RenderUtils.rect(graphics, x + 1, rowY, width - 2, MODULE_HEIGHT, hovered ? theme.hover : theme.panel);
@@ -161,12 +205,16 @@ public final class CategoryPanel {
         }
     }
 
+    /** Keeps the panel header inside the screen so a drag can never lose it. */
+    private void clampToScreen() {
+        x = Math.max(0, Math.min(x, Math.max(0, screenWidth - width)));
+        y = Math.max(0, Math.min(y, Math.max(0, screenHeight - HEADER_HEIGHT)));
+    }
+
     /** Returns true when the click was consumed. */
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (!RenderUtils.hovered(mouseX, mouseY, x, y, width, HEADER_HEIGHT)) {
-            if (!RenderUtils.hovered(mouseX, mouseY, x, y, width, getHeight())) {
-                return false;
-            }
+        if (!RenderUtils.hovered(mouseX, mouseY, x, y, width, getHeight())) {
+            return false;
         }
         if (RenderUtils.hovered(mouseX, mouseY, x, y, width, HEADER_HEIGHT)) {
             if (button == 0) {
@@ -186,9 +234,9 @@ public final class CategoryPanel {
             return false;
         }
 
-        int rowY = y + HEADER_HEIGHT + 2;
+        int rowY = y + HEADER_HEIGHT + 2 - (int) scroll;
         for (Module module : visibleModules()) {
-            if (RenderUtils.hovered(mouseX, mouseY, x, rowY, width, MODULE_HEIGHT)) {
+            if (isInViewport(mouseY) && RenderUtils.hovered(mouseX, mouseY, x, rowY, width, MODULE_HEIGHT)) {
                 if (button == 0) {
                     module.toggle();
                 } else if (button == 1 && !module.getSettings().isEmpty()) {
@@ -201,7 +249,7 @@ public final class CategoryPanel {
             if (module.isExpanded()) {
                 for (SettingWidget widget : widgetsFor(module)) {
                     widget.setBounds(x + 3, rowY, width - 6, widget.getHeight());
-                    if (widget.mouseClicked(mouseX, mouseY, button)) {
+                    if (isInViewport(mouseY) && widget.mouseClicked(mouseX, mouseY, button)) {
                         return true;
                     }
                     rowY += widget.getHeight() + 1;
@@ -211,16 +259,22 @@ public final class CategoryPanel {
         return true;
     }
 
+    private boolean isInViewport(double mouseY) {
+        int top = y + HEADER_HEIGHT + 2;
+        return mouseY >= top && mouseY <= top + viewportHeight();
+    }
+
     public boolean mouseDragged(double mouseX, double mouseY, int button) {
         if (dragging) {
             x = (int) mouseX - dragOffsetX;
             y = (int) mouseY - dragOffsetY;
+            clampToScreen();
             return true;
         }
-        int rowY = y + HEADER_HEIGHT + 2;
         if (collapsed) {
             return false;
         }
+        int rowY = y + HEADER_HEIGHT + 2 - (int) scroll;
         for (Module module : visibleModules()) {
             rowY += MODULE_HEIGHT;
             if (module.isExpanded()) {
@@ -255,25 +309,12 @@ public final class CategoryPanel {
     }
 
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-        if (!RenderUtils.hovered(mouseX, mouseY, x, y, width, getHeight())) {
+        if (collapsed || !RenderUtils.hovered(mouseX, mouseY, x, y, width, getHeight())) {
             return false;
         }
-        int rowY = y + HEADER_HEIGHT + 2;
-        if (collapsed) {
-            return false;
-        }
-        for (Module module : visibleModules()) {
-            rowY += MODULE_HEIGHT;
-            if (module.isExpanded()) {
-                for (SettingWidget widget : widgetsFor(module)) {
-                    if (widget.mouseScrolled(mouseX, mouseY, amount)) {
-                        return true;
-                    }
-                    rowY += widget.getHeight() + 1;
-                }
-            }
-        }
-        return false;
+        scroll -= amount * SCROLL_STEP;
+        scroll = Math.max(0, Math.min(maxScroll(), scroll));
+        return true;
     }
 
     /** Routes a key press to any widget currently capturing input. */
@@ -301,5 +342,19 @@ public final class CategoryPanel {
 
     public boolean isDragging() {
         return dragging;
+    }
+
+    public void setScreenSize(int screenWidth, int screenHeight) {
+        this.screenWidth = screenWidth;
+        this.screenHeight = screenHeight;
+    }
+
+    public void setGuiScale(double guiScale) {
+        this.guiScale = guiScale <= 0 ? 1.0 : guiScale;
+    }
+
+    /** Caps the visible list height so panels fit the window they are placed in. */
+    public void setMaxHeight(int maxContentHeight) {
+        this.maxContentHeight = Math.max(MODULE_HEIGHT * 2, maxContentHeight);
     }
 }
