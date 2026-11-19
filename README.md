@@ -27,7 +27,7 @@ JDK lives elsewhere.
 ./gradlew clean build
 ```
 
-The mod JAR is written to `build/libs/sevennv-1.10.0.jar`. A sources JAR is
+The mod JAR is written to `build/libs/sevennv-1.10.1.jar`. A sources JAR is
 produced alongside it.
 
 ### Offline builds
@@ -58,7 +58,7 @@ the instance. Run `./gradlew build` first.
 
 1. Install Fabric Loader for 1.21.11.
 2. Put [Fabric API](https://modrinth.com/mod/fabric-api) for 1.21.11 in `.minecraft/mods/`.
-3. Put `build/libs/sevennv-1.10.0.jar` in `.minecraft/mods/`.
+3. Put `build/libs/sevennv-1.10.1.jar` in `.minecraft/mods/`.
 4. Launch the Fabric 1.21.11 profile.
 
 ### Kali Linux setup
@@ -136,7 +136,7 @@ in chat (they are handled locally and never sent) or as `/!command`.
 
 ## Modules
 
-193 modules across seven categories, plus 57 movable HUD elements.
+192 modules across seven categories, plus 57 movable HUD elements.
 
 **Combat (30)** — Crystal Aura, Crystal Assist, Auto Totem, Auto Armor, Auto
 Weapon, Surround, Hole Fill, Target HUD, Totem Counter, Crystal Counter, Damage
@@ -177,19 +177,31 @@ Screenshot Manager, Session Statistics, Friend List, Enemy List, Notifications,
 Module Search, Auto Tip, Announcer, Item Drop Guard, Chat Filter, Auto Shear,
 Auto Breed, Auto Mount, Auto Bucket, Chat Logger, Anti AFK, Middle Click.
 
-**Diagnostics (17)** — Packet Inspector, Packet Statistics, Protocol
+**Diagnostics (16)** — Packet Inspector, Packet Statistics, Protocol
 Information, Connection Diagnostics, Server Capability Detection, Anti Cheat
 Detector, Detection Exposure, Desync Detector, Chunk Loading Diagnostics, Entity
 Metadata Inspector, Client State Inspector, Ping History, Entity Diagnostics,
-Frame Time, Packet Rate, Packet Limiter, Frame Profiler.
+Frame Time, Packet Rate, Frame Profiler.
+
+Every diagnostics overlay has its own `X`/`Y` setting, so several can be open at
+once without covering each other. Packet Rate reports peak and spike counts and
+names the busiest packet type during a spike, which is what tells you whether a
+burst came from chunk streaming or entities.
 
 A handful of modules hook the render pipeline through mixins (Zoom, Freecam,
 Camera Clip, View Model, Anti Fog, No Render, No Hurt Cam, Aspect Ratio, Anti
 Blind, Damage Tint, Fast Place, Fast Break, Velocity, No Jump Delay, Auto Fish,
 No Weather, Entity Culling, Block Entity Culling, Pixel Blocks, Particle Limiter).
+
 Each one only touches local client state — a projection matrix, a fog distance, a
 camera transform, a tesselation pose or a local cooldown — and never sends
 anything the server did not already expect.
+
+No Rotate is camera-only. It measures the jump a server rotation correction would
+cause and eases the view back with a decaying offset, but the player entity keeps
+exactly the rotation the server sent. Nothing is spoofed, no packet is cancelled
+and the position the client reports is unchanged — it is a comfort feature, not a
+combat bypass.
 
 ### Performance
 
@@ -336,7 +348,7 @@ per-session state.
 
 ## Performance
 
-A client with 193 modules has to be careful about what it does per frame. The
+A client with 192 modules has to be careful about what it does per frame. The
 dispatch layer is built around that:
 
 * **Enabled-only dispatch.** `ModuleManager` keeps pre-filtered lists of the

@@ -3,6 +3,7 @@ package dev.sevennv.client.mixin;
 import dev.sevennv.client.SevennvClient;
 import dev.sevennv.client.render.CameraClip;
 import dev.sevennv.client.render.Freecam;
+import dev.sevennv.client.render.NoRotate;
 import net.minecraft.client.Camera;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -40,12 +41,34 @@ public abstract class CameraMixin {
             return;
         }
         Freecam freecam = SevennvClient.getModuleManager().get(Freecam.class);
-        if (freecam == null || !freecam.isEnabled()) {
+        if (freecam != null && freecam.isEnabled()) {
+            Vec3 position = freecam.cameraPosition();
+            setPosition(position.x, position.y, position.z);
+            setRotation(freecam.cameraYaw(), freecam.cameraPitch());
             return;
         }
-        Vec3 position = freecam.cameraPosition();
-        setPosition(position.x, position.y, position.z);
-        setRotation(freecam.cameraYaw(), freecam.cameraPitch());
+
+        // No Rotate only nudges the camera; the player entity keeps the exact
+        // rotation the server sent, so movement and reported position are
+        // unaffected.
+        NoRotate noRotate = SevennvClient.getModuleManager().get(NoRotate.class);
+        if (noRotate != null && noRotate.isEnabled()) {
+            float yawOffset = noRotate.cameraYawOffset();
+            float pitchOffset = noRotate.cameraPitchOffset();
+            if (yawOffset != 0 || pitchOffset != 0) {
+                setRotation(yRot() + yawOffset, clampPitch(xRot() + pitchOffset));
+            }
+        }
+    }
+
+    @Shadow
+    public abstract float yRot();
+
+    @Shadow
+    public abstract float xRot();
+
+    private static float clampPitch(float pitch) {
+        return Math.max(-90.0f, Math.min(90.0f, pitch));
     }
 
     /**

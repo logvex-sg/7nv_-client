@@ -1,9 +1,7 @@
 package dev.sevennv.client.diagnostics;
 
-import dev.sevennv.client.config.IntSetting;
 import dev.sevennv.client.config.Theme;
-import dev.sevennv.client.module.Category;
-import dev.sevennv.client.module.Module;
+import dev.sevennv.client.config.IntSetting;
 import dev.sevennv.client.module.ModuleManager;
 import net.minecraft.client.gui.GuiGraphics;
 
@@ -18,9 +16,9 @@ import java.util.Locale;
  * <p>Profiling is enabled only while this module is on, so an ordinary session
  * never pays the {@link System#nanoTime()} calls.
  */
-public final class FrameProfiler extends Module {
+public final class FrameProfiler extends DiagModule {
     public FrameProfiler() {
-        super("Frame Profiler", "Attributes frame time to the client's own loops", Category.DIAGNOSTICS);
+        super("Frame Profiler", "Attributes frame time to the client's own loops");
         refresh = integer("Refresh", "Milliseconds between resets", 1000, 250, 10000);
         showAverages = bool("Averages", "Show per-call averages", true);
     }
@@ -88,7 +86,7 @@ public final class FrameProfiler extends Module {
         panel.row("Render 2D", phase(lastRenderNanos, lastRenderCalls));
         panel.row("World", phase(lastWorldNanos, lastWorldCalls));
         panel.row("Modules", String.valueOf(dev.sevennv.client.SevennvClient.getModuleManager().getEnabledCount()));
-        panel.render(graphics, theme, 4, 4);
+        drawPanel(graphics, panel);
     }
 
     private String phase(long nanos, long calls) {
@@ -98,10 +96,5 @@ public final class FrameProfiler extends Module {
         }
         double avgMicros = nanos / 1000.0 / calls;
         return String.format(Locale.ROOT, "%.2f ms (%d, %.0f \u00b5s)", totalMs, calls, avgMicros);
-    }
-
-    private Theme theme() {
-        var config = dev.sevennv.client.SevennvClient.getConfigManager();
-        return config == null ? new Theme() : config.getTheme();
     }
 }

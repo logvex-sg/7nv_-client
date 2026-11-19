@@ -1,9 +1,7 @@
 package dev.sevennv.client.diagnostics;
 
-import dev.sevennv.client.config.BooleanSetting;
 import dev.sevennv.client.config.Theme;
-import dev.sevennv.client.module.Category;
-import dev.sevennv.client.module.Module;
+import dev.sevennv.client.config.BooleanSetting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.world.entity.player.Player;
@@ -13,9 +11,9 @@ import net.minecraft.world.entity.player.Player;
  * on data the client already negotiated during login. This is descriptive only:
  * no capability probe is sent to the server.
  */
-public final class ServerCapabilityDetection extends Module {
+public final class ServerCapabilityDetection extends DiagModule {
     public ServerCapabilityDetection() {
-        super("Server Capability Detection", "Reports negotiated server features", Category.DIAGNOSTICS);
+        super("Server Capability Detection", "Reports negotiated server features");
         showSimulation = bool("Simulation distance", "Show the server simulation distance", true);
         showSecureChat = bool("Secure chat", "Show whether chat signing is enforced", true);
         showBrand = bool("Brand", "Show the detected server brand", true);
@@ -53,11 +51,6 @@ public final class ServerCapabilityDetection extends Module {
                 panel.row("Own entry", connection.getPlayerInfo(player.getUUID()) == null ? "absent" : "present");
             }
         }
-        panel.render(graphics, theme, 4, 4);
-    }
-
-    private Theme theme() {
-        var config = dev.sevennv.client.SevennvClient.getConfigManager();
-        return config == null ? new Theme() : config.getTheme();
+        drawPanel(graphics, panel);
     }
 }

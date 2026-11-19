@@ -1,10 +1,8 @@
 package dev.sevennv.client.diagnostics;
 
+import dev.sevennv.client.config.Theme;
 import dev.sevennv.client.config.BooleanSetting;
 import dev.sevennv.client.config.IntSetting;
-import dev.sevennv.client.config.Theme;
-import dev.sevennv.client.module.Category;
-import dev.sevennv.client.module.Module;
 import dev.sevennv.client.render.RenderUtils;
 import dev.sevennv.client.utils.PacketLog;
 import dev.sevennv.client.utils.Timer;
@@ -18,9 +16,9 @@ import java.util.Map;
  * in each direction. Rates are sampled once a second from the counters the
  * packet observer maintains, so the module adds no per-packet cost of its own.
  */
-public final class PacketStatistics extends Module {
+public final class PacketStatistics extends DiagModule {
     public PacketStatistics() {
-        super("Packet Statistics", "Shows packet totals and rates", Category.DIAGNOSTICS);
+        super("Packet Statistics", "Shows packet totals and rates");
         topCount = integer("Top types", "How many packet types to list per direction", 4, 0, 10);
         showRates = bool("Rates", "Show per-second rates", true);
         showInbound = bool("Inbound", "Include inbound statistics", true);
@@ -65,8 +63,8 @@ public final class PacketStatistics extends Module {
         int width = 168;
         int rows = 2 + (showRates.get() ? 2 : 0) + topCount.get() * 2;
         int height = 14 + rows * 9;
-        int x = graphics.guiWidth() - width - 4;
-        int y = 4;
+        int x = graphics.guiWidth() - width - DiagPanel.DEFAULT_X + offsetX();
+        int y = DiagPanel.DEFAULT_Y + offsetY();
 
         RenderUtils.rect(graphics, x, y, width, height, theme.panel);
         RenderUtils.outline(graphics, x, y, width, height, theme.border);
@@ -106,10 +104,5 @@ public final class PacketStatistics extends Module {
 
     private static String trim1(double value) {
         return String.valueOf(Math.round(value));
-    }
-
-    private Theme theme() {
-        var config = dev.sevennv.client.SevennvClient.getConfigManager();
-        return config == null ? new Theme() : config.getTheme();
     }
 }

@@ -1,10 +1,8 @@
 package dev.sevennv.client.diagnostics;
 
+import dev.sevennv.client.config.Theme;
 import dev.sevennv.client.config.BooleanSetting;
 import dev.sevennv.client.config.IntSetting;
-import dev.sevennv.client.config.Theme;
-import dev.sevennv.client.module.Category;
-import dev.sevennv.client.module.Module;
 import dev.sevennv.client.render.RenderUtils;
 import dev.sevennv.client.utils.Timer;
 import net.minecraft.client.gui.GuiGraphics;
@@ -15,9 +13,9 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
  * check. Values are sampled once a second; the module only reads the client's
  * own measurements and never probes the server.
  */
-public final class ConnectionDiagnostics extends Module {
+public final class ConnectionDiagnostics extends DiagModule {
     public ConnectionDiagnostics() {
-        super("Connection Diagnostics", "Shows latency, jitter and packet rates", Category.DIAGNOSTICS);
+        super("Connection Diagnostics", "Shows latency, jitter and packet rates");
         showJitter = bool("Jitter", "Show latency variation", true);
         warnPing = integer("Warn ping", "Highlight the latency above this value", 200, 20, 2000);
         sampleSeconds = integer("Sample window", "Seconds between samples", 1, 1, 10);
@@ -68,8 +66,8 @@ public final class ConnectionDiagnostics extends Module {
         int width = 150;
         int rows = 2 + (showJitter.get() ? 1 : 0);
         int height = 14 + rows * 9;
-        int x = 4;
-        int y = 4;
+        int x = panelX();
+        int y = panelY();
 
         RenderUtils.rect(graphics, x, y, width, height, theme.panel);
         RenderUtils.outline(graphics, x, y, width, height, theme.border);
@@ -101,10 +99,5 @@ public final class ConnectionDiagnostics extends Module {
 
     public double jitter() {
         return jitter;
-    }
-
-    private Theme theme() {
-        var config = dev.sevennv.client.SevennvClient.getConfigManager();
-        return config == null ? new Theme() : config.getTheme();
     }
 }

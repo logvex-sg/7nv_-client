@@ -1,9 +1,7 @@
 package dev.sevennv.client.diagnostics;
 
-import dev.sevennv.client.config.BooleanSetting;
 import dev.sevennv.client.config.Theme;
-import dev.sevennv.client.module.Category;
-import dev.sevennv.client.module.Module;
+import dev.sevennv.client.config.BooleanSetting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
@@ -13,9 +11,9 @@ import net.minecraft.world.level.chunk.status.ChunkStatus;
  * view radius and whether the chunk under the player is present and populated.
  * Reads the client chunk cache only; no chunks are requested.
  */
-public final class ChunkLoadingDiagnostics extends Module {
+public final class ChunkLoadingDiagnostics extends DiagModule {
     public ChunkLoadingDiagnostics() {
-        super("Chunk Loading Diagnostics", "Reports chunk cache and loading state", Category.DIAGNOSTICS);
+        super("Chunk Loading Diagnostics", "Reports chunk cache and loading state");
         showRadius = bool("View radius", "Show the client view radius", true);
         showPlayerChunk = bool("Player chunk", "Show the state of the chunk under you", true);
         showEmpty = bool("Empty sections", "Show the loaded-but-empty section count", false);
@@ -32,7 +30,7 @@ public final class ChunkLoadingDiagnostics extends Module {
 
         if (mc.level == null || mc.player == null) {
             panel.row("State", "no world");
-            panel.render(graphics, theme, 4, 4);
+            drawPanel(graphics, panel);
             return;
         }
 
@@ -53,11 +51,6 @@ public final class ChunkLoadingDiagnostics extends Module {
         if (showEmpty.get()) {
             panel.row("Empty sections", String.valueOf(cache.getLoadedEmptySections().size()));
         }
-        panel.render(graphics, theme, 4, 4);
-    }
-
-    private Theme theme() {
-        var config = dev.sevennv.client.SevennvClient.getConfigManager();
-        return config == null ? new Theme() : config.getTheme();
+        drawPanel(graphics, panel);
     }
 }

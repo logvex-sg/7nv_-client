@@ -1,9 +1,7 @@
 package dev.sevennv.client.diagnostics;
 
-import dev.sevennv.client.config.IntSetting;
 import dev.sevennv.client.config.Theme;
-import dev.sevennv.client.module.Category;
-import dev.sevennv.client.module.Module;
+import dev.sevennv.client.config.IntSetting;
 import net.minecraft.client.gui.GuiGraphics;
 
 /**
@@ -11,9 +9,9 @@ import net.minecraft.client.gui.GuiGraphics;
  * sample is taken from the client's own frame callback; nothing is sent and no
  * server state is touched.
  */
-public final class FrameTime extends Module {
+public final class FrameTime extends DiagModule {
     public FrameTime() {
-        super("Frame Time", "Reports per-frame render time", Category.DIAGNOSTICS);
+        super("Frame Time", "Reports per-frame render time");
         window = integer("Window", "Frames averaged for the display", 60, 10, 600);
         warnMs = integer("Warn ms", "Highlight frame times above this", 33, 5, 500);
     }
@@ -58,11 +56,6 @@ public final class FrameTime extends Module {
         panel.row("Max", String.format(java.util.Locale.ROOT, "%.1f ms", max));
         panel.row("Est. FPS", current > 0 ? String.format(java.util.Locale.ROOT, "%.0f", 1000.0 / current) : "-");
         panel.row("Status", current > warnMs.get() ? "slow" : "ok");
-        panel.render(graphics, theme, 4, 4);
-    }
-
-    private Theme theme() {
-        var config = dev.sevennv.client.SevennvClient.getConfigManager();
-        return config == null ? new Theme() : config.getTheme();
+        drawPanel(graphics, panel);
     }
 }

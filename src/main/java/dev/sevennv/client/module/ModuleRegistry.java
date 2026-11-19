@@ -28,7 +28,6 @@ import dev.sevennv.client.diagnostics.ConnectionDiagnostics;
 import dev.sevennv.client.diagnostics.DesyncDetector;
 import dev.sevennv.client.diagnostics.EntityMetadataInspector;
 import dev.sevennv.client.diagnostics.PacketInspector;
-import dev.sevennv.client.diagnostics.PacketLimiter;
 import dev.sevennv.client.diagnostics.FrameProfiler;
 import dev.sevennv.client.diagnostics.PacketStatistics;
 import dev.sevennv.client.diagnostics.ProtocolInformation;
@@ -395,7 +394,6 @@ public final class ModuleRegistry {
                 // Diagnostics
                 new PacketRate(),
                 new PacketInspector(),
-                new PacketLimiter(),
                 new FrameProfiler(),
                 new PacketStatistics(),
                 new ProtocolInformation(),

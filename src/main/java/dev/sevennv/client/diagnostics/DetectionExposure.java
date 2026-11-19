@@ -1,10 +1,9 @@
 package dev.sevennv.client.diagnostics;
 
+import dev.sevennv.client.module.Module;
+import dev.sevennv.client.config.Theme;
 import dev.sevennv.client.config.BooleanSetting;
 import dev.sevennv.client.config.IntSetting;
-import dev.sevennv.client.config.Theme;
-import dev.sevennv.client.module.Category;
-import dev.sevennv.client.module.Module;
 import dev.sevennv.client.utils.ExposureAudit;
 import net.minecraft.client.gui.GuiGraphics;
 
@@ -20,9 +19,9 @@ import java.util.List;
  * does not suggest how to evade detection — it only shows your footprint so you
  * can make your own choices.
  */
-public final class DetectionExposure extends Module {
+public final class DetectionExposure extends DiagModule {
     public DetectionExposure() {
-        super("Detection Exposure", "Self-audit of your own anti-cheat exposure", Category.DIAGNOSTICS);
+        super("Detection Exposure", "Self-audit of your own anti-cheat exposure");
         maxRows = integer("Rows", "How many risky modules to list", 5, 1, 15);
         showReasons = bool("Show reasons", "Explain why each module is flagged", true);
         showServer = bool("Server signals", "Include latency, jitter and TPS", true);
@@ -93,7 +92,7 @@ public final class DetectionExposure extends Module {
         if (showServer.get()) {
             appendServer(panel);
         }
-        panel.render(graphics, theme, 4, 4);
+        drawPanel(graphics, panel);
     }
 
     private void appendServer(DiagPanel panel) {
@@ -114,10 +113,5 @@ public final class DetectionExposure extends Module {
 
     public int mediumRiskCount() {
         return medium;
-    }
-
-    private Theme theme() {
-        var config = dev.sevennv.client.SevennvClient.getConfigManager();
-        return config == null ? new Theme() : config.getTheme();
     }
 }

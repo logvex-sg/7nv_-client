@@ -1,10 +1,8 @@
 package dev.sevennv.client.diagnostics;
 
+import dev.sevennv.client.config.Theme;
 import dev.sevennv.client.config.BooleanSetting;
 import dev.sevennv.client.config.IntSetting;
-import dev.sevennv.client.config.Theme;
-import dev.sevennv.client.module.Category;
-import dev.sevennv.client.module.Module;
 import dev.sevennv.client.render.RenderUtils;
 import dev.sevennv.client.utils.PacketLog;
 import dev.sevennv.client.events.PacketEvent;
@@ -18,9 +16,9 @@ import java.util.List;
  * direction. Nothing is dropped, delayed or modified, so this is a pure
  * read-only window on traffic the client already sends and receives.
  */
-public final class PacketInspector extends Module {
+public final class PacketInspector extends DiagModule {
     public PacketInspector() {
-        super("Packet Inspector", "Lists recent packets in both directions", Category.DIAGNOSTICS);
+        super("Packet Inspector", "Lists recent packets in both directions");
         maxLines = integer("Max lines", "How many packets to list", 12, 1, 32);
         showOutbound = bool("Outbound", "Include packets the client sent", true);
         showInbound = bool("Inbound", "Include packets the client received", true);
@@ -57,8 +55,8 @@ public final class PacketInspector extends Module {
         int width = 178;
         int rows = lines.size();
         int height = 14 + Math.max(1, rows) * 9 + (showCounters.get() ? 10 : 0);
-        int x = 4;
-        int y = 4;
+        int x = panelX();
+        int y = panelY();
 
         RenderUtils.rect(graphics, x, y, width, height, theme.panel);
         RenderUtils.outline(graphics, x, y, width, height, theme.border);
@@ -85,10 +83,5 @@ public final class PacketInspector extends Module {
             value = value.substring(0, value.length() - 2) + "\u2026";
         }
         return value;
-    }
-
-    private Theme theme() {
-        var config = dev.sevennv.client.SevennvClient.getConfigManager();
-        return config == null ? new Theme() : config.getTheme();
     }
 }

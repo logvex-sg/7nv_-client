@@ -1,10 +1,8 @@
 package dev.sevennv.client.diagnostics;
 
+import dev.sevennv.client.config.Theme;
 import dev.sevennv.client.config.BooleanSetting;
 import dev.sevennv.client.config.IntSetting;
-import dev.sevennv.client.config.Theme;
-import dev.sevennv.client.module.Category;
-import dev.sevennv.client.module.Module;
 import dev.sevennv.client.render.RenderUtils;
 import dev.sevennv.client.utils.PlayerUtils;
 import net.minecraft.client.gui.GuiGraphics;
@@ -20,9 +18,9 @@ import java.util.List;
  * entity under the crosshair. The data is the client's own copy of what the
  * server published; nothing is queried or mutated.
  */
-public final class EntityMetadataInspector extends Module {
+public final class EntityMetadataInspector extends DiagModule {
     public EntityMetadataInspector() {
-        super("Entity Metadata Inspector", "Shows tracked data for the entity you look at", Category.DIAGNOSTICS);
+        super("Entity Metadata Inspector", "Shows tracked data for the entity you look at");
         maxEntries = integer("Max entries", "How many data values to list", 8, 1, 24);
         showValues = bool("Values", "Show the value of each entry", true);
         showId = bool("Entity id", "Show the entity id and type", true);
@@ -91,10 +89,5 @@ public final class EntityMetadataInspector extends Module {
             RenderUtils.text(graphics, line, x + 3, rowY, theme.text);
             rowY += 9;
         }
-    }
-
-    private Theme theme() {
-        var config = dev.sevennv.client.SevennvClient.getConfigManager();
-        return config == null ? new Theme() : config.getTheme();
     }
 }

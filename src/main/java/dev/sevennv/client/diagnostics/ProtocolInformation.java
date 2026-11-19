@@ -1,9 +1,7 @@
 package dev.sevennv.client.diagnostics;
 
-import dev.sevennv.client.config.BooleanSetting;
 import dev.sevennv.client.config.Theme;
-import dev.sevennv.client.module.Category;
-import dev.sevennv.client.module.Module;
+import dev.sevennv.client.config.BooleanSetting;
 import dev.sevennv.client.render.RenderUtils;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.GuiGraphics;
@@ -14,9 +12,9 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
  * the negotiated chunk radius. Everything comes from data the client already
  * holds after login; no extra traffic is generated.
  */
-public final class ProtocolInformation extends Module {
+public final class ProtocolInformation extends DiagModule {
     public ProtocolInformation() {
-        super("Protocol Information", "Shows version and protocol details", Category.DIAGNOSTICS);
+        super("Protocol Information", "Shows version and protocol details");
         showBrand = bool("Server brand", "Show the server brand string", true);
         showVersion = bool("Version", "Show the game and protocol version", true);
         showAddress = bool("Address", "Show the remote address", false);
@@ -32,8 +30,8 @@ public final class ProtocolInformation extends Module {
         int rows = 2 + (showVersion.get() ? 1 : 0) + (showBrand.get() ? 1 : 0) + (showAddress.get() ? 1 : 0);
         int width = 168;
         int height = 14 + rows * 9;
-        int x = 4;
-        int y = graphics.guiHeight() / 2 - height / 2;
+        int x = DiagPanel.DEFAULT_X + offsetX();
+        int y = graphics.guiHeight() / 2 - height / 2 + offsetY();
 
         RenderUtils.rect(graphics, x, y, width, height, theme.panel);
         RenderUtils.outline(graphics, x, y, width, height, theme.border);
@@ -81,10 +79,5 @@ public final class ProtocolInformation extends Module {
             value = value.substring(0, value.length() - 2) + "\u2026";
         }
         return value;
-    }
-
-    private Theme theme() {
-        var config = dev.sevennv.client.SevennvClient.getConfigManager();
-        return config == null ? new Theme() : config.getTheme();
     }
 }

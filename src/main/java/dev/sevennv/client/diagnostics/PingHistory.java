@@ -2,17 +2,15 @@ package dev.sevennv.client.diagnostics;
 
 import dev.sevennv.client.config.IntSetting;
 import dev.sevennv.client.hud.HudData;
-import dev.sevennv.client.module.Category;
-import dev.sevennv.client.module.Module;
 import dev.sevennv.client.utils.Timer;
 
 /**
  * Tracks ping over time and reports the minimum, average and maximum seen this
  * session. Sampling runs once a second so it has no per-frame cost.
  */
-public final class PingHistory extends Module {
+public final class PingHistory extends DiagModule {
     public PingHistory() {
-        super("Ping History", "Tracks your ping over the session", Category.DIAGNOSTICS);
+        super("Ping History", "Tracks your ping over the session");
         sampleInterval = integer("Sample", "Milliseconds between samples", 1000, 250, 10000);
     }
 

@@ -1,10 +1,8 @@
 package dev.sevennv.client.diagnostics;
 
+import dev.sevennv.client.config.Theme;
 import dev.sevennv.client.config.BooleanSetting;
 import dev.sevennv.client.config.IntSetting;
-import dev.sevennv.client.config.Theme;
-import dev.sevennv.client.module.Category;
-import dev.sevennv.client.module.Module;
 import dev.sevennv.client.events.PacketEvent;
 import dev.sevennv.client.utils.Timer;
 import net.minecraft.client.gui.GuiGraphics;
@@ -20,9 +18,9 @@ import net.minecraft.world.phys.Vec3;
  * recently reported. This is purely a readout: it never re-sends a position and
  * never attempts to correct the server's view.
  */
-public final class DesyncDetector extends Module {
+public final class DesyncDetector extends DiagModule {
     public DesyncDetector() {
-        super("Desync Detector", "Reports drift between local and server position", Category.DIAGNOSTICS);
+        super("Desync Detector", "Reports drift between local and server position");
         threshold = number("Threshold", "Distance in blocks before it counts as desync", 0.5, 0.05, 10.0, 0.05);
         warnOnly = bool("Warn only", "Only report, never correct", true);
         showVector = bool("Show offset", "Show the offset components", true);
@@ -91,7 +89,7 @@ public final class DesyncDetector extends Module {
         if (warnOnly.get() && desynced) {
             panel.row("Note", "report only");
         }
-        panel.render(graphics, theme, 4, 4);
+        drawPanel(graphics, panel);
     }
 
     public boolean isDesynced() {
@@ -100,10 +98,5 @@ public final class DesyncDetector extends Module {
 
     public double offset() {
         return distance;
-    }
-
-    private Theme theme() {
-        var config = dev.sevennv.client.SevennvClient.getConfigManager();
-        return config == null ? new Theme() : config.getTheme();
     }
 }

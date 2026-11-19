@@ -16,6 +16,14 @@ public final class DiagPanel {
     private final List<String[]> rows = new ArrayList<>();
     private String title;
 
+    /**
+     * Panels default to the same corner, so with more than one diagnostics
+     * module enabled they used to draw on top of each other. Each module
+     * exposes an X/Y offset and passes it here instead of a fixed 4,4.
+     */
+    public static final int DEFAULT_X = 4;
+    public static final int DEFAULT_Y = 4;
+
     public DiagPanel title(String title) {
         this.title = title;
         return this;

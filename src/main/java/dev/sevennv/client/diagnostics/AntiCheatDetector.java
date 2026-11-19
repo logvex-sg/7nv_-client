@@ -1,11 +1,9 @@
 package dev.sevennv.client.diagnostics;
 
+import dev.sevennv.client.config.Theme;
 import dev.sevennv.client.config.BooleanSetting;
 import dev.sevennv.client.config.IntSetting;
-import dev.sevennv.client.config.Theme;
 import dev.sevennv.client.events.PacketEvent;
-import dev.sevennv.client.module.Category;
-import dev.sevennv.client.module.Module;
 import dev.sevennv.client.utils.NotificationManager;
 import dev.sevennv.client.utils.ServerFingerprint;
 import net.minecraft.client.gui.GuiGraphics;
@@ -23,9 +21,9 @@ import java.util.Locale;
  * packet and never attempts to evade anything — it is an information readout so
  * you know what you are connected to.
  */
-public final class AntiCheatDetector extends Module {
+public final class AntiCheatDetector extends DiagModule {
     public AntiCheatDetector() {
-        super("Anti Cheat Detector", "Identifies the server's anti-cheat and software", Category.DIAGNOSTICS);
+        super("Anti Cheat Detector", "Identifies the server's anti-cheat and software");
         notifyOnJoin = bool("Notify on join", "Announce the detection once per connection", true);
         showPlugins = bool("Show plugins", "Also list recognised plugins", true);
         showEvidence = bool("Show evidence", "Show the signal each match came from", false);
@@ -83,7 +81,7 @@ public final class AntiCheatDetector extends Module {
         DiagPanel panel = new DiagPanel().title("Anti Cheat Detector");
         if (mc.getConnection() == null) {
             panel.row("State", "Disconnected");
-            panel.render(graphics, theme, 4, 4);
+            drawPanel(graphics, panel);
             return;
         }
 
@@ -119,7 +117,7 @@ public final class AntiCheatDetector extends Module {
             }
         }
 
-        panel.render(graphics, theme, 4, 4);
+        drawPanel(graphics, panel);
     }
 
     private List<ServerFingerprint.Match> plugins() {
@@ -139,10 +137,5 @@ public final class AntiCheatDetector extends Module {
     /** Last announced summary, for other modules or the HUD. */
     public String lastSummary() {
         return lastNotified;
-    }
-
-    private Theme theme() {
-        var config = dev.sevennv.client.SevennvClient.getConfigManager();
-        return config == null ? new Theme() : config.getTheme();
     }
 }

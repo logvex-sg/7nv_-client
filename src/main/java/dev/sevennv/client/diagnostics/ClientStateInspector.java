@@ -1,9 +1,7 @@
 package dev.sevennv.client.diagnostics;
 
-import dev.sevennv.client.config.BooleanSetting;
 import dev.sevennv.client.config.Theme;
-import dev.sevennv.client.module.Category;
-import dev.sevennv.client.module.Module;
+import dev.sevennv.client.config.BooleanSetting;
 import dev.sevennv.client.utils.PacketLog;
 import net.minecraft.client.gui.GuiGraphics;
 
@@ -12,9 +10,9 @@ import net.minecraft.client.gui.GuiGraphics;
  * (screen, world, connection, module count). Useful when something looks wrong
  * and you want one place to see what the client believes is true.
  */
-public final class ClientStateInspector extends Module {
+public final class ClientStateInspector extends DiagModule {
     public ClientStateInspector() {
-        super("Client State Inspector", "Summarises the client's current state", Category.DIAGNOSTICS);
+        super("Client State Inspector", "Summarises the client's current state");
         showWorld = bool("World", "Show the current dimension and world state", true);
         showScreen = bool("Screen", "Show the open screen", true);
         showModules = bool("Modules", "Show the enabled module count", true);
@@ -51,11 +49,6 @@ public final class ClientStateInspector extends Module {
         if (showPackets.get()) {
             panel.row("Packets", PacketLog.inboundCount() + " / " + PacketLog.outboundCount());
         }
-        panel.render(graphics, theme, 4, 4);
-    }
-
-    private Theme theme() {
-        var config = dev.sevennv.client.SevennvClient.getConfigManager();
-        return config == null ? new Theme() : config.getTheme();
+        drawPanel(graphics, panel);
     }
 }
