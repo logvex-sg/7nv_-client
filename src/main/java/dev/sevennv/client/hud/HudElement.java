@@ -53,7 +53,14 @@ public abstract class HudElement {
     }
 
     public void setEnabled(boolean enabled) {
+        if (this.enabled == enabled) {
+            return;
+        }
         this.enabled = enabled;
+        var manager = dev.sevennv.client.SevennvClient.getHudManager();
+        if (manager != null) {
+            manager.invalidate();
+        }
     }
 
     /** Width in GUI-scaled pixels, recomputed from the current data. */

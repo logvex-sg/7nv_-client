@@ -12,6 +12,7 @@ import dev.sevennv.client.misc.AutoGg;
 import dev.sevennv.client.misc.AutoReconnect;
 import dev.sevennv.client.misc.ChatFilter;
 import dev.sevennv.client.misc.ChatMacros;
+import dev.sevennv.client.misc.ChatSuffix;
 import dev.sevennv.client.misc.ChatTimestamps;
 import dev.sevennv.client.misc.LastServer;
 import dev.sevennv.client.module.ModuleManager;
@@ -43,6 +44,10 @@ import net.minecraft.world.level.Level;
  */
 final class ClientEvents {
     private static Level lastLevel;
+
+    // Reused across ticks so a steady packet stream does not allocate a list
+    // every tick.
+    private static final java.util.List<PacketEvent> packetBatch = new java.util.ArrayList<>();
 
     private ClientEvents() {
     }
@@ -90,6 +95,7 @@ final class ClientEvents {
 
         ClientSendMessageEvents.ALLOW_CHAT.register(ClientEvents::onSendChat);
         ClientSendMessageEvents.ALLOW_COMMAND.register(ClientEvents::onSendCommand);
+        ClientSendMessageEvents.MODIFY_CHAT.register(ClientEvents::modifyChat);
 
         HudElementRegistry.addLast(Identifier.fromNamespaceAndPath(SevennvClient.MOD_ID, "hud"),
                 ClientEvents::renderHud);
@@ -133,9 +139,17 @@ final class ClientEvents {
         // Packets are recorded on the netty thread and drained here, on the
         // client thread, so modules never touch game state off-thread. The
         // combat tracker consumes the same stream to attribute kills.
-        for (PacketEvent event : PacketLog.drain()) {
-            trackCombat(event, mc);
-            SevennvClient.getModuleManager().onPacket(event);
+        ModuleManager manager = SevennvClient.getModuleManager();
+        int drained = PacketLog.drainInto(packetBatch);
+        if (drained > 0) {
+            boolean wantPackets = manager.hasPacketHandlers();
+            for (int i = 0; i < drained; i++) {
+                PacketEvent event = packetBatch.get(i);
+                trackCombat(event, mc);
+                if (wantPackets) {
+                    manager.onPacket(event);
+                }
+            }
         }
 
         drainDeaths();
@@ -256,6 +270,19 @@ final class ClientEvents {
         }
         ChatSendEvent event = new ChatSendEvent(message);
         return !SevennvClient.getEventManager().postCancellable(event);
+    }
+
+    /**
+     * Rewrites an outgoing chat line before vanilla sends it. This is the only
+     * correct place to append a suffix: sending from the ALLOW event would
+     * re-enter the same event and loop.
+     */
+    private static String modifyChat(String message) {
+        ChatSuffix suffix = modules().get(ChatSuffix.class);
+        if (suffix == null || !suffix.isEnabled()) {
+            return message;
+        }
+        return suffix.decorate(message);
     }
 
     private static boolean onSendCommand(String command) {

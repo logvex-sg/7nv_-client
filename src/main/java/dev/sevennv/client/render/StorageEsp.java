@@ -59,14 +59,17 @@ public final class StorageEsp extends Module {
         storage.clear();
         int radius = (int) Math.ceil(range.get());
         BlockPos centre = mc.player.blockPosition();
+        // A mutable cursor keeps a (2r+1)^3 sweep from allocating a position
+        // per sample; only the few hits are copied into the result lists.
+        BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();
         for (int dx = -radius; dx <= radius; dx++) {
             for (int dy = -radius; dy <= radius; dy++) {
                 for (int dz = -radius; dz <= radius; dz++) {
-                    BlockPos pos = centre.offset(dx, dy, dz);
-                    if (!mc.level.isLoaded(pos)) {
+                    cursor.set(centre.getX() + dx, centre.getY() + dy, centre.getZ() + dz);
+                    if (!mc.level.isLoaded(cursor)) {
                         continue;
                     }
-                    BlockState state = mc.level.getBlockState(pos);
+                    BlockState state = mc.level.getBlockState(cursor);
                     if (!BlockUtils.isStorage(state)) {
                         continue;
                     }
@@ -74,9 +77,9 @@ public final class StorageEsp extends Module {
                         continue;
                     }
                     if (BlockUtils.isShulker(state)) {
-                        shulkers.add(pos.immutable());
+                        shulkers.add(cursor.immutable());
                     } else {
-                        storage.add(pos.immutable());
+                        storage.add(cursor.immutable());
                     }
                 }
             }

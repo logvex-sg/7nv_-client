@@ -3,6 +3,7 @@ package dev.sevennv.client.hud;
 import dev.sevennv.client.SevennvClient;
 import dev.sevennv.client.config.ConfigManager;
 import dev.sevennv.client.module.Module;
+import dev.sevennv.client.module.ModuleManager;
 import dev.sevennv.client.render.RenderUtils;
 import net.minecraft.client.gui.GuiGraphics;
 
@@ -13,10 +14,21 @@ import java.util.List;
 /**
  * The classic array list: one right-aligned row per enabled module, sorted by
  * rendered width so the stack forms a clean triangle.
+ *
+ * <p>The element is asked for its width and height several times per frame by
+ * the editor and the renderer, so the visible rows are cached: they are rebuilt
+ * only when the enabled set changes (signalled by
+ * {@link ModuleManager#getEnabledVersion()}) or the suffix setting flips.
  */
 public final class ArraylistHud extends HudElement {
     private static final Comparator<Module> BY_WIDTH = Comparator.comparingInt(
             (Module module) -> RenderUtils.font().width(label(module))).reversed();
+
+    private final List<Module> visible = new ArrayList<>();
+    private int cachedVersion = -1;
+    private boolean cachedSuffix;
+    private int cachedWidth;
+    private int cachedHeight;
 
     public ArraylistHud() {
         super("arraylist", "Array List", 0, 0);
@@ -55,30 +67,40 @@ public final class ArraylistHud extends HudElement {
 
     @Override
     public int getWidth() {
-        int max = 0;
-        for (Module module : visibleModules()) {
-            max = Math.max(max, RenderUtils.font().width(label(module)));
-        }
-        return max;
+        refresh();
+        return cachedWidth;
     }
 
     @Override
     public int getHeight() {
-        return visibleModules().size() * 10;
+        refresh();
+        return cachedHeight;
     }
 
-    private List<Module> visibleModules() {
-        List<Module> result = new ArrayList<>();
-        if (SevennvClient.getModuleManager() == null) {
-            return result;
+    /** Rebuilds the cached rows only when the enabled set or suffix mode changed. */
+    private void refresh() {
+        ConfigManager config = SevennvClient.getConfigManager();
+        boolean suffix = config != null && config.isArraylistSuffix();
+        ModuleManager manager = SevennvClient.getModuleManager();
+        int version = manager == null ? -1 : manager.getEnabledVersion();
+        if (version == cachedVersion && suffix == cachedSuffix) {
+            return;
         }
-        for (Module module : SevennvClient.getModuleManager().getEnabled()) {
-            if (module.isVisibleInArraylist()) {
-                result.add(module);
+        cachedVersion = version;
+        cachedSuffix = suffix;
+        visible.clear();
+        int max = 0;
+        if (manager != null) {
+            for (Module module : manager.getEnabled()) {
+                if (module.isVisibleInArraylist()) {
+                    visible.add(module);
+                    max = Math.max(max, RenderUtils.font().width(label(module)));
+                }
             }
+            visible.sort(BY_WIDTH);
         }
-        result.sort(BY_WIDTH);
-        return result;
+        cachedWidth = max;
+        cachedHeight = visible.size() * 10;
     }
 
     @Override
@@ -87,12 +109,12 @@ public final class ArraylistHud extends HudElement {
         if (config == null) {
             return;
         }
+        refresh();
         // The array list draws itself relative to the stored anchor corner.
         int screenWidth = HudData.mc().getWindow().getGuiScaledWidth();
         boolean rightAligned = config.getArraylistX() >= screenWidth / 2;
-        List<Module> modules = visibleModules();
         int row = 0;
-        for (Module module : modules) {
+        for (Module module : visible) {
             String text = label(module);
             int width = RenderUtils.font().width(text);
             int drawX = rightAligned ? config.getArraylistX() - width - 2 : config.getArraylistX();

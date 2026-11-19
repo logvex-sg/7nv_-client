@@ -52,9 +52,10 @@ public final class HudFormat {
         return new ArrayList<>(player.getActiveEffects());
     }
 
+    private static final String[] ROMAN = {"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"};
+
     public static String toRoman(int value) {
-        String[] numerals = {"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"};
-        return value >= 0 && value < numerals.length ? numerals[value] : String.valueOf(value);
+        return value >= 0 && value < ROMAN.length ? ROMAN[value] : String.valueOf(value);
     }
 
     /** Custom display name of an item, if the player renamed it. */

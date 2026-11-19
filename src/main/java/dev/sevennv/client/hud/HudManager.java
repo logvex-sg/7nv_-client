@@ -11,8 +11,32 @@ import java.util.List;
 public final class HudManager {
     private final List<HudElement> elements = new ArrayList<>();
 
+    // Enabled subset, rebuilt only when an element is toggled so the per-frame
+    // render loop does not test every element's flag on each frame.
+    private final List<HudElement> enabled = new ArrayList<>();
+    private boolean enabledDirty = true;
+
     public void register(HudElement element) {
         elements.add(element);
+        enabledDirty = true;
+    }
+
+    /** Marks the enabled cache stale after an element's state changes. */
+    public void invalidate() {
+        enabledDirty = true;
+    }
+
+    private void ensureEnabled() {
+        if (!enabledDirty) {
+            return;
+        }
+        enabledDirty = false;
+        enabled.clear();
+        for (HudElement element : elements) {
+            if (element.isEnabled()) {
+                enabled.add(element);
+            }
+        }
     }
 
     public List<HudElement> getElements() {
@@ -30,10 +54,8 @@ public final class HudManager {
 
     /** Draws every enabled element. Called from the HUD render callback. */
     public void render(GuiGraphics graphics) {
-        for (HudElement element : elements) {
-            if (!element.isEnabled()) {
-                continue;
-            }
+        ensureEnabled();
+        for (HudElement element : enabled) {
             try {
                 element.render(graphics);
             } catch (Exception exception) {
@@ -43,21 +65,17 @@ public final class HudManager {
     }
 
     /** Turns every element on or off at once. */
-    public void setAllEnabled(boolean enabled) {
+    public void setAllEnabled(boolean enabledState) {
         for (HudElement element : elements) {
-            element.setEnabled(enabled);
+            element.setEnabled(enabledState);
         }
+        enabledDirty = true;
     }
 
     /** Number of currently enabled elements. */
     public int enabledCount() {
-        int count = 0;
-        for (HudElement element : elements) {
-            if (element.isEnabled()) {
-                count++;
-            }
-        }
-        return count;
+        ensureEnabled();
+        return enabled.size();
     }
 
     /** Draws every element as an outlined box for the layout editor. */

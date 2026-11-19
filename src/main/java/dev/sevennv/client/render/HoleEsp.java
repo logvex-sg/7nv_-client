@@ -3,11 +3,16 @@ package dev.sevennv.client.render;
 import dev.sevennv.client.config.BooleanSetting;
 import dev.sevennv.client.config.ColorSetting;
 import dev.sevennv.client.config.DoubleSetting;
+import dev.sevennv.client.config.IntSetting;
 import dev.sevennv.client.module.Category;
 import dev.sevennv.client.module.Module;
 import dev.sevennv.client.utils.HoleUtils;
+import dev.sevennv.client.utils.Timer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.AABB;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Highlights safe holes in the surrounding terrain so a fight can be planned
@@ -21,6 +26,7 @@ public final class HoleEsp extends Module {
         normalColor = color("Color", "Colour for obsidian holes", 0xFFFFC040);
         fill = bool("Fill", "Draw a translucent fill", true);
         lineWidth = number("Line width", "Stroke thickness", 1.5, 0.5, 4.0, 0.5);
+        refresh = integer("Refresh", "Milliseconds between scans", 250, 50, 2000);
     }
 
     private final DoubleSetting range;
@@ -28,16 +34,39 @@ public final class HoleEsp extends Module {
     private final ColorSetting normalColor;
     private final BooleanSetting fill;
     private final DoubleSetting lineWidth;
+    private final IntSetting refresh;
+
+    // Hole positions change slowly (only when a block is placed or broken), so
+    // the scan is throttled to a few times a second instead of running a full
+    // 3D block sweep on every rendered frame.
+    private final Timer timer = new Timer();
+    private final List<HoleUtils.Hole> holes = new ArrayList<>();
+
+    @Override
+    public void onWorldChange() {
+        holes.clear();
+        timer.reset();
+    }
+
+    @Override
+    public void onTick() {
+        if (mc.level == null || mc.player == null || !timer.tick(refresh.get())) {
+            return;
+        }
+        int radius = (int) Math.ceil(range.get());
+        holes.clear();
+        holes.addAll(HoleUtils.scan(mc.level, mc.player.blockPosition(), radius));
+    }
 
     @Override
     public void onWorldRender() {
         if (mc.level == null || mc.player == null) {
             return;
         }
-        int radius = (int) Math.ceil(range.get());
-        for (HoleUtils.Hole hole : HoleUtils.scan(mc.level, mc.player.blockPosition(), radius)) {
+        double rangeSq = range.get() * range.get();
+        for (HoleUtils.Hole hole : holes) {
             BlockPos pos = hole.pos();
-            if (mc.player.distanceToSqr(net.minecraft.world.phys.Vec3.atCenterOf(pos)) > range.get() * range.get()) {
+            if (mc.player.distanceToSqr(net.minecraft.world.phys.Vec3.atCenterOf(pos)) > rangeSq) {
                 continue;
             }
             boolean safe = isSafe(pos);

@@ -102,6 +102,24 @@ public final class CommandManager {
             }
             return builder.toString();
         }));
+        commands.add(new Command("perf", "perf [reset]", "Shows the client's own per-frame cost", args -> {
+            dev.sevennv.client.module.ModuleManager manager = SevennvClient.getModuleManager();
+            if (args.length > 0 && args[0].equalsIgnoreCase("reset")) {
+                dev.sevennv.client.module.ModuleManager.resetProfile();
+                return "Profiler counters reset";
+            }
+            if (!dev.sevennv.client.module.ModuleManager.isProfiling()) {
+                return "Profiler is off - enable the Frame Profiler module first";
+            }
+            long[] snapshot = dev.sevennv.client.module.ModuleManager.profileSnapshot();
+            long tickNs = snapshot[dev.sevennv.client.module.ModuleManager.PROFILE_TICK * 2];
+            long renderNs = snapshot[dev.sevennv.client.module.ModuleManager.PROFILE_RENDER2D * 2];
+            long worldNs = snapshot[dev.sevennv.client.module.ModuleManager.PROFILE_WORLD * 2];
+            long frames = snapshot[dev.sevennv.client.module.ModuleManager.PROFILE_RENDER2D * 2 + 1];
+            return String.format(java.util.Locale.ROOT,
+                    "Modules %d  tick %.1fms  render %.1fms  world %.1fms  (%d frames)",
+                    manager.getEnabledCount(), tickNs / 1e6, renderNs / 1e6, worldNs / 1e6, frames);
+        }));
         commands.add(new Command("help", "help", "Lists client commands", args -> {
             StringBuilder builder = new StringBuilder("Commands: ");
             for (Command command : commands) {

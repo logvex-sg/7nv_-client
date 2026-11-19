@@ -27,7 +27,7 @@ JDK lives elsewhere.
 ./gradlew clean build
 ```
 
-The mod JAR is written to `build/libs/sevennv-1.9.1.jar`. A sources JAR is
+The mod JAR is written to `build/libs/sevennv-1.10.0.jar`. A sources JAR is
 produced alongside it.
 
 ### Offline builds
@@ -58,7 +58,7 @@ the instance. Run `./gradlew build` first.
 
 1. Install Fabric Loader for 1.21.11.
 2. Put [Fabric API](https://modrinth.com/mod/fabric-api) for 1.21.11 in `.minecraft/mods/`.
-3. Put `build/libs/sevennv-1.9.1.jar` in `.minecraft/mods/`.
+3. Put `build/libs/sevennv-1.10.0.jar` in `.minecraft/mods/`.
 4. Launch the Fabric 1.21.11 profile.
 
 ### Kali Linux setup
@@ -129,13 +129,14 @@ in chat (they are handled locally and never sent) or as `/!command`.
 | `!screenshot` | Capture a screenshot with the configured name |
 | `!effects` | List your active status effects |
 | `!ac` | Report the detected anti-cheat and server software |
+| `!perf [reset]` | Report or reset the client's own dispatch timings |
 | `!help` | List the commands |
 
 ---
 
 ## Modules
 
-189 modules across seven categories, plus 57 movable HUD elements.
+193 modules across seven categories, plus 57 movable HUD elements.
 
 **Combat (30)** — Crystal Aura, Crystal Assist, Auto Totem, Auto Armor, Auto
 Weapon, Surround, Hole Fill, Target HUD, Totem Counter, Crystal Counter, Damage
@@ -151,14 +152,14 @@ Speed, Auto Jump Reset, No Jump Delay, Auto Jump, Auto Sneak, Gui Move, No
 Levitation, Keep Sprint, Sprint Reset, No Web, Water Speed, Elytra Boost, Auto
 Swim, Auto Parkour, Bunny Hop.
 
-**Render (40)** — Player ESP, Mob ESP, Storage ESP, Item ESP, Entity ESP,
+**Render (41)** — Player ESP, Mob ESP, Storage ESP, Item ESP, Entity ESP,
 Tracers, Nametags, Fullbright, Hole ESP, Chunk Borders, Entity Boxes, Health
 Bars, Projectile Trails, Custom Crosshair, Block Highlight, Logout Spots, Zoom,
 Freecam, Camera Clip, View Model, Anti Fog, No Render, No Hurt Cam, Aspect
 Ratio, Anti Blind, Damage Tint, No Weather, Trajectories, Breadcrumbs, Item
-Frame ESP, Search ESP, No Bob, True Sight, Entity Culling, Block Entity Culling,
-Pixel Blocks, Fast Graphics, Particle Limiter, Entity Distance, Dynamic Render
-Distance.
+Frame ESP, Search ESP, No Bob, No Rotate, True Sight, Entity Culling, Block Entity
+Culling, Pixel Blocks, Fast Graphics, Particle Limiter, Entity Distance, Dynamic
+Render Distance.
 
 **World (25)** — Waypoints, Death Coordinates, Stash Notes, Portal Information,
 Chunk Information, Biome Display, Coordinates, Map Markers, World Time,
@@ -171,16 +172,16 @@ HUD, Totem HUD, Health HUD, Durability HUD, Item Information, Status Effects,
 Auto Respawn, Auto Log, Anti Hunger, Auto Pot, Refill, Auto Armor Switch, Chest
 Stealer, Auto Fish, Fast Use, Auto Tool Switch, Auto Drop, Auto Milk, Auto Exp, Health Warning.
 
-**Misc (22)** — Auto EZ, Auto GG, Auto Reconnect, Chat Timestamps, Chat Macros,
+**Misc (23)** — Auto EZ, Auto GG, Auto Reconnect, Chat Timestamps, Chat Suffix, Chat Macros,
 Screenshot Manager, Session Statistics, Friend List, Enemy List, Notifications,
 Module Search, Auto Tip, Announcer, Item Drop Guard, Chat Filter, Auto Shear,
 Auto Breed, Auto Mount, Auto Bucket, Chat Logger, Anti AFK, Middle Click.
 
-**Diagnostics (15)** — Packet Inspector, Packet Statistics, Protocol
+**Diagnostics (17)** — Packet Inspector, Packet Statistics, Protocol
 Information, Connection Diagnostics, Server Capability Detection, Anti Cheat
 Detector, Detection Exposure, Desync Detector, Chunk Loading Diagnostics, Entity
 Metadata Inspector, Client State Inspector, Ping History, Entity Diagnostics,
-Frame Time, Packet Rate.
+Frame Time, Packet Rate, Packet Limiter, Frame Profiler.
 
 A handful of modules hook the render pipeline through mixins (Zoom, Freecam,
 Camera Clip, View Model, Anti Fog, No Render, No Hurt Cam, Aspect Ratio, Anti
@@ -332,6 +333,33 @@ modules that depend on a world (Auto Reconnect opts out) and reset all
 per-session state.
 
 ---
+
+## Performance
+
+A client with 193 modules has to be careful about what it does per frame. The
+dispatch layer is built around that:
+
+* **Enabled-only dispatch.** `ModuleManager` keeps pre-filtered lists of the
+  modules that actually implement each hook, so a disabled module — or an enabled
+  module that does not override a hook — is never called. The lists are rebuilt
+  only when a module is toggled or rebound, not every tick.
+* **No-op overrides are skipped.** Each module records at construction which
+  hooks it overrides; a module with no `onTick` is not in the tick list at all.
+* **World scans are throttled.** Block-scanning modules (Storage ESP, Search ESP,
+  Hole ESP, Portal Information, Sign Reader, Container Information, Mob Spawn
+  ESP) cache their results and rescan on a configurable interval rather than
+  every frame, and they sweep with a single reused `MutableBlockPos` instead of
+  allocating a position per block.
+* **The array list caches its labels.** Suffix strings are recomputed at most
+  four times a second, so a module that counts chunks cannot stall a frame.
+* **Packet capture is opt-in by consumer.** The packet log keeps a reusable
+  buffer and memoises packet class names, and the packet dispatcher is skipped
+  entirely when no enabled module listens to packets.
+
+To see what the client itself is costing, enable **Frame Profiler** (Diagnostics)
+or run `!perf`. Both report the time spent inside Logvex's own tick, 2D render
+and world render loops, which separates "the client is heavy" from "the game is
+heavy". Profiling is off unless you ask for it.
 
 ## Limitations
 

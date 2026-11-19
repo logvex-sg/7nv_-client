@@ -29,7 +29,6 @@ public class PacketEvent {
     }
 
     public String getPacketName() {
-        String name = packet.getClass().getSimpleName();
-        return name.isEmpty() ? packet.getClass().getSimpleName() : name;
+        return dev.sevennv.client.utils.PacketLog.nameOf(packet.getClass());
     }
 }

@@ -16,9 +16,13 @@ import java.util.concurrent.atomic.LongAdder;
 /**
  * Thread-safe packet accounting for the diagnostics modules.
  *
- * <p>{@link #record} is called from the netty thread; everything else is read
- * from the client thread. Recent packets are buffered in a bounded queue so a
- * burst can never grow the heap, and the totals are plain atomics.
+ * <p>{@link #record} runs on the netty thread for every packet in both
+ * directions, so it must stay cheap: two atomics, one counter lookup and one
+ * buffered event. The packet's simple name is memoised per class in a
+ * {@link ClassValue} because {@link Class#getSimpleName()} reflects and
+ * allocates on every call, which would otherwise be the dominant cost of the
+ * hook. Recent packets are buffered in a bounded queue so a burst can never
+ * grow the heap.
  */
 public final class PacketLog {
     private static final int RECENT_CAPACITY = 256;
@@ -29,17 +33,31 @@ public final class PacketLog {
     private static final Map<String, LongAdder> OUTBOUND_TYPES = new ConcurrentHashMap<>();
     private static final ConcurrentLinkedQueue<PacketEvent> RECENT = new ConcurrentLinkedQueue<>();
 
+    /** Per-class memoised simple name, computed once per packet type. */
+    private static final ClassValue<String> NAMES = new ClassValue<>() {
+        @Override
+        protected String computeValue(Class<?> type) {
+            String name = type.getSimpleName();
+            return name.isEmpty() ? type.getName() : name;
+        }
+    };
+
     private PacketLog() {
+    }
+
+    public static String nameOf(Class<?> type) {
+        return NAMES.get(type);
     }
 
     /** Records one observed packet. Safe to call from the netty thread. */
     public static void record(PacketEvent.Direction direction, Packet<?> packet) {
+        String name = NAMES.get(packet.getClass());
         if (direction == PacketEvent.Direction.INBOUND) {
             INBOUND.incrementAndGet();
-            INBOUND_TYPES.computeIfAbsent(packet.getClass().getSimpleName(), key -> new LongAdder()).increment();
+            INBOUND_TYPES.computeIfAbsent(name, key -> new LongAdder()).increment();
         } else {
             OUTBOUND.incrementAndGet();
-            OUTBOUND_TYPES.computeIfAbsent(packet.getClass().getSimpleName(), key -> new LongAdder()).increment();
+            OUTBOUND_TYPES.computeIfAbsent(name, key -> new LongAdder()).increment();
         }
         RECENT.add(new PacketEvent(packet, direction));
         // Drop the oldest entries rather than letting the queue grow.
@@ -50,15 +68,23 @@ public final class PacketLog {
 
     /** Returns and clears the packets recorded since the last drain. */
     public static List<PacketEvent> drain() {
-        if (RECENT.isEmpty()) {
-            return List.of();
-        }
-        List<PacketEvent> batch = new ArrayList<>(RECENT.size());
+        List<PacketEvent> batch = new ArrayList<>();
+        drainInto(batch);
+        return batch;
+    }
+
+    /**
+     * Drains the recorded packets into {@code target}, which the caller reuses
+     * across ticks so a steady packet stream does not allocate a fresh list
+     * every tick. Returns the number of packets moved.
+     */
+    public static int drainInto(List<PacketEvent> target) {
+        target.clear();
         PacketEvent event;
         while ((event = RECENT.poll()) != null) {
-            batch.add(event);
+            target.add(event);
         }
-        return batch;
+        return target.size();
     }
 
     public static long inboundCount() {

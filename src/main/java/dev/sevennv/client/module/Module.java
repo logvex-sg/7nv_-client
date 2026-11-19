@@ -34,10 +34,59 @@ public abstract class Module {
     private boolean expanded;
     private boolean alwaysOn;
 
+    // Which hooks this module actually overrides. Detected once at construction
+    // so the dispatcher can skip modules that would only run an empty method.
+    private final boolean overridesTick;
+    private final boolean overridesRender2D;
+    private final boolean overridesWorldRender;
+    private final boolean overridesPacket;
+    private final boolean overridesChat;
+    private final boolean overridesWorldChange;
+
     protected Module(String name, String description, Category category) {
         this.name = name;
         this.description = description;
         this.category = category;
+        Class<?> type = getClass();
+        this.overridesTick = overrides(type, "onTick");
+        this.overridesRender2D = overrides(type, "onRender2D", net.minecraft.client.gui.GuiGraphics.class, float.class);
+        this.overridesWorldRender = overrides(type, "onWorldRender");
+        this.overridesPacket = overrides(type, "onPacket", dev.sevennv.client.events.PacketEvent.class);
+        this.overridesChat = overrides(type, "onChat", dev.sevennv.client.events.ChatReceiveEvent.class);
+        this.overridesWorldChange = overrides(type, "onWorldChange");
+    }
+
+    private static boolean overrides(Class<?> type, String method, Class<?>... params) {
+        try {
+            return type.getMethod(method, params).getDeclaringClass() != Module.class;
+        } catch (NoSuchMethodException exception) {
+            return false;
+        }
+    }
+
+    /** True when this module implements the tick hook (so it is worth calling). */
+    public boolean wantsTick() {
+        return overridesTick;
+    }
+
+    public boolean wantsRender2D() {
+        return overridesRender2D;
+    }
+
+    public boolean wantsWorldRender() {
+        return overridesWorldRender;
+    }
+
+    public boolean wantsPackets() {
+        return overridesPacket;
+    }
+
+    public boolean wantsChat() {
+        return overridesChat;
+    }
+
+    public boolean wantsWorldChange() {
+        return overridesWorldChange;
     }
 
     /**
@@ -84,6 +133,9 @@ public abstract class Module {
             return;
         }
         this.enabled = state;
+        if (dev.sevennv.client.SevennvClient.getModuleManager() != null) {
+            dev.sevennv.client.SevennvClient.getModuleManager().invalidate();
+        }
         try {
             if (state) {
                 onEnable();
@@ -121,6 +173,9 @@ public abstract class Module {
 
     public void setKeybind(InputConstants.Key key) {
         this.keybind = key == null ? InputConstants.UNKNOWN : key;
+        if (dev.sevennv.client.SevennvClient.getModuleManager() != null) {
+            dev.sevennv.client.SevennvClient.getModuleManager().invalidate();
+        }
     }
 
     public boolean isBound() {
@@ -225,8 +280,21 @@ public abstract class Module {
         return "";
     }
 
+    // Suffix computation can be expensive (some modules count chunks), and the
+    // array list asks for it on every frame. Caching it for a short interval
+    // keeps the array list smooth without making the values feel stale.
+    private static final long LABEL_TTL_MS = 250L;
+    private String cachedLabel;
+    private long cachedLabelAt = -LABEL_TTL_MS;
+
     public String getArraylistLabel() {
+        long now = System.currentTimeMillis();
+        if (cachedLabel != null && now - cachedLabelAt < LABEL_TTL_MS) {
+            return cachedLabel;
+        }
         String suffix = getArraylistSuffix();
-        return suffix.isEmpty() ? name : name + " \u00a77" + suffix;
+        cachedLabel = suffix.isEmpty() ? name : name + " \u00a77" + suffix;
+        cachedLabelAt = now;
+        return cachedLabel;
     }
 }

@@ -28,6 +28,8 @@ import dev.sevennv.client.diagnostics.ConnectionDiagnostics;
 import dev.sevennv.client.diagnostics.DesyncDetector;
 import dev.sevennv.client.diagnostics.EntityMetadataInspector;
 import dev.sevennv.client.diagnostics.PacketInspector;
+import dev.sevennv.client.diagnostics.PacketLimiter;
+import dev.sevennv.client.diagnostics.FrameProfiler;
 import dev.sevennv.client.diagnostics.PacketStatistics;
 import dev.sevennv.client.diagnostics.ProtocolInformation;
 import dev.sevennv.client.diagnostics.ServerCapabilityDetection;
@@ -38,6 +40,7 @@ import dev.sevennv.client.misc.ChatFilter;
 import dev.sevennv.client.misc.ItemDropGuard;
 import dev.sevennv.client.misc.AutoReconnect;
 import dev.sevennv.client.misc.ChatMacros;
+import dev.sevennv.client.misc.ChatSuffix;
 import dev.sevennv.client.misc.ChatTimestamps;
 import dev.sevennv.client.misc.EnemyList;
 import dev.sevennv.client.misc.FriendList;
@@ -165,6 +168,7 @@ import dev.sevennv.client.movement.ElytraBoost;
 import dev.sevennv.client.render.ItemFrameEsp;
 import dev.sevennv.client.render.SearchEsp;
 import dev.sevennv.client.render.NoBob;
+import dev.sevennv.client.render.NoRotate;
 import dev.sevennv.client.render.TrueSight;
 import dev.sevennv.client.render.EntityCulling;
 import dev.sevennv.client.render.BlockEntityCulling;
@@ -301,6 +305,7 @@ public final class ModuleRegistry {
                 new ItemFrameEsp(),
                 new SearchEsp(),
                 new NoBob(),
+                new NoRotate(),
                 new TrueSight(),
                 new EntityCulling(),
                 new BlockEntityCulling(),
@@ -368,6 +373,7 @@ public final class ModuleRegistry {
                 new AutoGg(),
                 new AutoReconnect(),
                 new ChatTimestamps(),
+                new ChatSuffix(),
                 new ChatMacros(),
                 new ChatFilter(),
                 new ScreenshotManager(),
@@ -389,6 +395,8 @@ public final class ModuleRegistry {
                 // Diagnostics
                 new PacketRate(),
                 new PacketInspector(),
+                new PacketLimiter(),
+                new FrameProfiler(),
                 new PacketStatistics(),
                 new ProtocolInformation(),
                 new ConnectionDiagnostics(),
